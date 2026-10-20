@@ -51,9 +51,9 @@ Ver ADR-004. Laravel 13 + Livewire 4 + Bootstrap 5 + PostgreSQL 18, todo en Dock
 | `proyecto-maestro.md` | cambia la visión o el alcance (humano) |
 | `registro-decisiones.md` | se toma una decisión relevante |
 | `AGENTS.md` | cambia una regla o convención (humano) |
-| `diccionario-datos.md` | se descubre algo de un campo o se agrega un dataset |
-| `runbook-ingesta.md` | cambia el proceso de carga o aparece un error nuevo |
-| `CHANGELOG.md` | cada cambio integrado |
+| `diccionario-datos.md` (por crear) | se descubre algo de un campo o se agrega un dataset |
+| `runbook-ingesta.md` (por crear) | cambia el proceso de carga o aparece un error nuevo |
+| `CHANGELOG.md` (por crear) | cada cambio integrado |
 
 El mapa completo de qué cambio toca qué documento estará en `.pi/memory/docs-map.md`.
 

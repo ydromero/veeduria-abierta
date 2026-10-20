@@ -24,12 +24,13 @@ Cada decisión técnica o de producto relevante se registra aquí. Una decisión
 ## ADR-004 — Versiones del stack fijadas
 - **Estado:** Aceptada · 2026-10-19
 - **Decisión:** se fija lo instalado en la sesión inicial y se actualiza más adelante, como tarea propia.
-- **Versiones verificadas en esa sesión:** Laravel 13.37.0 · PHP 8.5 (imagen `sail-8.5/app`) · Livewire 4.4.7 · laravel/ui 4.6.3 con Bootstrap 5.3 (confirmar versión exacta en `package.json`) · PostgreSQL 18 (`postgres:18-alpine`) · Vite 8.3.4 · Node 24.
+- **Versiones verificadas en esa sesión:** Laravel 13.37.0 · PHP 8.5 (imagen `sail-8.5/app`) · Livewire 4.4.7 · laravel/ui 4.6.3 con Bootstrap 5.3.8 instalada (constraint `^5.2.3` en `package.json`) · PostgreSQL 18 (`postgres:18-alpine`) · Vite 8.3.4 · Node 24 (verificado por el humano el 2026-10-20: Node v24.22.0 dentro del contenedor Sail; el Node del host, 22.x, no se usa).
 - **Riesgo conocido:** la mayoría de los ejemplos y modelos conocen mejor Livewire 3. Toda sintaxis de Livewire se verifica contra el código en `vendor/livewire/livewire` o su documentación v4 antes de usarla.
 
 ## ADR-005 — Cola de trabajos con driver `database`
 - **Estado:** Aceptada · 2026-10-19
 - **Decisión:** `QUEUE_CONNECTION=database` (la tabla `jobs` ya está migrada). Sin Redis ni Horizon en la fase 1.
+- **Verificado por el humano el 2026-10-20:** `.env` contiene `QUEUE_CONNECTION=database` (el agente no puede leer `.env`).
 - **Revisar cuando:** el volumen de la ingesta histórica haga lenta la cola.
 
 ## ADR-006 — Pruebas contra la base `testing`
@@ -54,6 +55,7 @@ Cada decisión técnica o de producto relevante se registra aquí. Una decisión
 - **Estado:** Aceptada · 2026-10-19
 - **Contexto:** `sonnar-platform` ocupa 80, 5173, 5432 en la misma máquina.
 - **Decisión:** en `.env`: `APP_PORT=8080`, `VITE_PORT=5174`, `FORWARD_DB_PORT=5433`. (Acción manual del humano: PI no puede editar `.env`.)
+- **Verificado por el humano el 2026-10-20:** `.env` contiene los tres valores indicados (el agente no puede leer `.env`).
 
 ## ADR-011 — Agentes con modelos mixtos
 - **Estado:** Aceptada · 2026-10-19
@@ -69,3 +71,4 @@ Cada decisión técnica o de producto relevante se registra aquí. Una decisión
 - **P-01** — ¿En qué fase entra el motor de banderas rojas? Ya está decidido que sí entra (ADR-008); falta definir cuándo.
 - **P-02** — Nombre de la capa social/comunitaria (distinta de la plataforma editorial "Veeduría Abierta").
 - **P-03** — ¿Los agentes pueden hacer commits? Por defecto: **no**; proponen y el humano confirma.
+- **P-04** - ¿Se adopta Laravel Boost como fuente de documentación versionada para los agentes (riesgo Livewire 4)? Si se instala, puede reescribir AGENTS.md y CLAUDE.md.
