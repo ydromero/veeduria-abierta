@@ -58,7 +58,7 @@ Every ADR must state its **Constitutional basis** (`principles.md`), cited by pr
 
 ## ADR-012 — Research serves as a reference, not as the ultimate source of truth
 - **Status:** Accepted · 2026-10-19
-- **Decision:** `docs/referencia/investigacion-plataformas-veeduria-secop.md` informs the design but is not prescriptive. In cases where it conflicts with an ADR, the ADR takes precedence. Known discrepancies include the use of `$offset` and `X-App-Token` (ADR-002/003), assumptions regarding the use of Livewire 3, Bootstrap 4, and Redis/Horizon, as well as rules inherited from Sonnar GPON (ADR-004/005). Market figures cited therein should not be treated as facts without verifying the original source.
+- **Decision:** `docs/research/secop-platform-research.md` informs the design but is not prescriptive. In cases where it conflicts with an ADR, the ADR takes precedence. Known discrepancies include the use of `$offset` and `X-App-Token` (ADR-002/003), assumptions regarding the use of Livewire 3, Bootstrap 4, and Redis/Horizon, as well as rules inherited from Sonnar GPON (ADR-004/005). Market figures cited therein should not be treated as facts without verifying the original source.
 
 ## ADR-014 — Adoption of the Constitutional Layer
 - **Status:** Accepted · 2026-10-21
@@ -66,6 +66,14 @@ Every ADR must state its **Constitutional basis** (`principles.md`), cited by pr
 - **Decision:** Adopt `docs/principles.md` (version 1.0) as the apex constitutional document of the project. Its 15 principles (PR-01…PR-15), entrenchment tiers (E/F), hierarchy of norms, conflict-resolution algorithm, and Constitutional Test govern all future artifacts. Principle IDs are permanent from acceptance; renumbering is forbidden (see `principles.md` §7).
 - **Recorded drafting decisions:** (1) the educational mission promoted to standalone principle PR-01 — *Teach the method* (Tier F); (2) PR-06 — *Nothing is invented* entrenched (Tier E) with the derivation carve-out written into its formulation; (3) PR-14's secrecy clause hardened to admit no exception pathway; (4) Tier E membership: PR-05, PR-06, PR-09, PR-10, PR-12, PR-15.
 - **Knock-on edits executed in this commit:** Master Plan §3 becomes a pointer to `principles.md`; `AGENTS.md` rule 1 adds the constitutional pre-task reading; core domain rules gain principle citations; living-documents table gains `principles.md`.
+
+## ADR-013 — Internal Language: English
+- **Status:** Accepted · 2026-10-21
+- **Constitutional basis:** PR-04 (built to outlast); PR-14 (open by default — widest contributor pool); PR-15 (governance rule change, human-decided).
+- **Context:** Internal artifacts are mixed-language: prose is already English (Master Plan, Decision Log, research reference) while filenames, commit messages, `CLAUDE.md`, and conventions are Spanish. `AGENTS.md` previously mandated Spanish documentation. Agents and the international contributor pool work most reliably in English; citizens encounter only the product, never working documents.
+- **Decision:** (1) Internal language is English for all internal artifacts — documentation, filenames, ADRs, task specs, agent definitions, prompts, workflows, commit messages, branch names, code comments, test names, migration comments. (2) Citizen-facing language is Spanish — UI text, data explanations, public communications, educational material — confined to Blade views/UI strings, `docs/citizen/`, and public channels; that folder is the mechanical boundary of the policy. (3) Proper nouns are never translated: Colombian legal instruments (Ley 1712 de 2014, Ley 21 de 1991), institution and dataset names, SODA field values as published, and the public name *Veeduría Abierta* in citizen-facing contexts. (4) Borderline artifacts are internal by default (English with linked Spanish citizen material, not the reverse). (5) Data is not prose — this policy never justifies translating, normalizing, or altering source data (PR-05).
+- **Consequences:** Spanish commit history is not rewritten; the English-imperative convention applies from the first commit after adoption. Spanish-named files are renamed in one dedicated `git mv` commit with cross-references updated in the same commit. `CLAUDE.md` is translated. New artifacts are English from birth. Citizen-facing tone review remains a human decision (PR-15).
+- **Review when:** a significant contributor community with a different working language emerges, or a citizen-facing artifact class does not fit the two-folder boundary.
 
 ---
 

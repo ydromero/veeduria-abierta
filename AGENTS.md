@@ -3,7 +3,7 @@
 Mandatory rules for any agent working in this repository. If a rule conflicts with a specific instruction, **ask the human before taking action**.
 
 ## Before starting any task
-1. Read `principles.md` (constitutional layer — Tier E principles are never weakenable), `master-plan.md`, and `decision-log.md`. ADRs take precedence over any other document **except `principles.md`**, including research found in `docs/referencia/`.
+1. Read `principles.md` (constitutional layer — Tier E principles are never weakenable), `master-plan.md`, and `decision-log.md`. ADRs take precedence over any other document **except `principles.md`**, including research found in `docs/research/`.
 2. If the task involves SECOP data, read `docs/diccionario-datos.md`.
 3. Targeted reading: do not read large files in their entirety or process long outputs; use `offset`/`limit` and search queries instead.
 
@@ -39,18 +39,20 @@ Laravel 13 · PHP 8.5 · Livewire **4** · Bootstrap 5 · PostgreSQL 18 · Vite 
 - Treat user-uploaded or pre-existing files as originals; always work on copies.
 
 ## Language and Style
-- Code, variable names, migrations, and commits: **English**. Documentation, interface text, and messages for citizens: **Spanish**, using clear language free of jargon.
-- Any text explaining data to citizens must state the data source and its limitations.
+- **Internal artifacts (docs, code, commits, tasks, agents, prompts): English** — per ADR-013.
+- **Citizen-facing content (UI text, explanations of data, public communications): Spanish**, in plain language free of jargon. These live in Blade views/UI strings, `docs/citizen/`, and public channels — nowhere else.
+- **Never translated:** Colombian legal instrument names, institution and dataset names, SODA field values as published, and the project's public name *Veeduría Abierta* in citizen-facing contexts.
+- Any text explaining data to citizens must state the source and its limitations (PR-08).
 
 ## Human Decisions (Never Assume)
 Vision and priorities · approving or modifying ADRs · legal and data interpretation · what is published and the tone of voice used · communication with partners (BuscaSECOP, demoanalitica, etc.) · secrets and access credentials · merges and publication.
 
 ## Definition of Done
 A task is not considered complete until:
-1. the code or document complies with the rules set out in this file;
+1. the code or document complies with the rules in this file **and passes the Constitutional Test (`principles.md` §6)**;
 2. all relevant tests pass;
 3. the "living documents" affected by the change (listed in `.pi/memory/docs-map.md`) have been reviewed and updated—or an update has been proposed;
-4. any decisions made have been proposed for inclusion in `registro-decisiones.md`;
+4. any decisions made have been proposed for inclusion in `decision-log.md`;
 5. the human has been informed of what has changed, what remains pending, and which decisions require their input.
 
 ## When Information Is Missing
