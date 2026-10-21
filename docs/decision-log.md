@@ -127,6 +127,19 @@ Laravel Boost (documented in this repository's README) is Laravel's official AI-
 
 ---
 
+## ADR-016 — Adoption of the Pikit Agent-File Specification
+
+- **Status:** Accepted · 2026-10-21
+- **Origin:** Compliance review of `.pi/agents/project-architect.md` and `.pi/agents/_template.md` against the Pikit `subagents` extension and pi's tool-selection mechanics.
+- **Decision:** All agent definition files in `.pi/agents/` must follow the Pikit agent-file specification:
+  1. Every agent file starts with YAML frontmatter containing `name` and `description` (required — files without them are silently ignored by the loader).
+  2. `description` states the agent's powers and limits; it is governance surface for parent-session delegation.
+  3. `tools` follow least privilege: the minimum set that makes the approved charter effective. `write`/`edit` only for charter-granted write authority; `bash` only where the charter explicitly authorizes command execution. Omitted `tools` inherits the read-only default set.
+  4. `model` is omitted so agents inherit the session model (ADR-011: mixed models, recorded per session).
+  5. Templates must never carry parsable frontmatter; examples appear only inside fenced code blocks.
+- **Context:** Verified against Pikit `subagents` extension sources (`agents.ts`, `config.ts`) and pi docs (`cli.md` §tools): absent `name`/`description` → file skipped; explicit `tools` replaces the entire selection; the subagent default set is read-only and excludes `write`, `edit`, and `bash`. The Project Architect charter grants write authority over `.pi/memory/` artifacts, so its tool list explicitly includes `write, edit` and excludes `bash`, making P-03 (no commits, no migrations, no environment changes) enforceable at tool level.
+- **Consequences:** Agent charters are mirrored in frontmatter (single approval covers both). The "Run tests" charter row was rephrased: agents may propose, coordinate, and review testing activities. Test execution requires explicit authorization and an approved execution path. Template files in `.pi/agents/` are loader-visible; `AGENTS.md` gains an "Agent Files (Pikit Subagents)" section. Changes to agent files require `/reload`.
+
 ## Pending Items (open decisions)
 - **P-01** — At what stage should the "red flag" engine be integrated? It has already been decided that it will be included (ADR-008); the specific timing remains to be defined.
 - **P-02** — Name for the social/community layer (distinct from the "Veeduría Abierta" editorial platform).

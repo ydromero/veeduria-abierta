@@ -31,7 +31,24 @@ Laravel 13 · PHP 8.5 · Livewire **4** · Bootstrap 5 · PostgreSQL 18 · Vite 
 
 ## Testing
 - Tests must run against the `testing` database, never the development database (ADR-006). Use `RefreshDatabase`.
-- All new logic must be covered by tests. Run the tests before marking a task as complete. ## Safe Operation
+- All new logic must be covered by tests. Run the tests before marking a task as complete.
+
+## Agent Files (Pikit Subagents)
+- Agent definition files live in `.pi/agents/` and follow the Pikit specification
+  (ADR-016): every file must begin with YAML frontmatter containing `name` and
+  `description`, or the subagent loader silently ignores the file.
+- `description` is governance surface: it must state the agent's powers *and*
+  limits, because it drives how the parent session delegates work.
+- Tool lists are least privilege. Omitted `tools` means read-only defaults;
+  an explicit list replaces the whole selection. Add `write`/`edit` only for
+  charter-granted write authority. Never add `bash` unless the charter
+  explicitly authorizes command execution.
+- Templates in `.pi/agents/` must never carry parsable frontmatter; example
+  frontmatter belongs inside fenced code blocks.
+- After creating or changing an agent file, run `/reload` for the change to
+  take effect.
+
+## Safe Operation
 - Do not execute destructive commands (deleting volumes, `migrate:fresh`, `rm -rf`, `docker system prune`) without explicit authorization from the human.
 - Long-running builds and downloads should be triggered in the background, logged, and checked later; do not use a fixed timeout.
 - This machine also hosts `sonnar-platform`. Do not modify its containers, ports, or volumes.

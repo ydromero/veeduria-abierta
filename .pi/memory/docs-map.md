@@ -25,6 +25,8 @@ or the update explicitly deferred with a reason (AGENTS.md — Definition of Don
 | `CHANGELOG.md` | — (append-only) | Author of the accepted change |
 | `ATTRIBUTION.md` | `README.md` (if licenses change) | Agent proposes; human approves |
 | `.pi/agents/_template.md` | Every existing agent charter | Human approves charter changes |
+| `.pi/agents/<agent>.md` (any charter) | `AGENTS.md` (§ Agent Files, ADR-016), this file | Charter approved by human; frontmatter must match the charter (ADR-016) |
+| `docs/decision-log.md` (ADR-016) | `AGENTS.md`, `.pi/agents/_template.md`, every existing agent charter, `CHANGELOG.md` | Human accepted; Architect applied the knock-on edits |
 | `.pi/memory/docs-map.md` | — (self-maintaining) | Project Architect owns once active; human approves |
 
 ## Known stale references (tracked issues)
@@ -33,3 +35,14 @@ or the update explicitly deferred with a reason (AGENTS.md — Definition of Don
   `master-plan.md`, `decision-log.md`).
 - **AGENTS.md references (applied 2026-10-21):** rules 2 and 4 now cite
   `docs/data-dictionary.md`.
+- **ADR-016 applied (2026-10-21):** frontmatter added to
+  `.pi/agents/project-architect.md`; §0 added to `.pi/agents/_template.md`;
+  "Run tests" rows rephrased in both (execution requires explicit
+  authorization and an approved execution path); `AGENTS.md` gains the
+  "Agent Files (Pikit Subagents)" section.
+- **Open knock-on (tracked):** user-scope charters in `~/.pi/agent/agents/`
+  (`gpon-architect`, `issue-reviewer`, `laravel-livewire-reviewer`,
+  `livewire-bootstrap-reviewer`, `session-analyst`, `task-guide`) predate
+  ADR-016. Those outside this repository are not governed by the docs-map;
+  flagged to the human for an out-of-repo consistency check (their "Run tests"
+  wording, if any, may carry the same unfulfillable-without-`bash` pattern).
