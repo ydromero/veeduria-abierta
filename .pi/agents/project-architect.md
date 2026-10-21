@@ -28,7 +28,7 @@ Phase 0.5 and persists. It proposes — it never decides (PR-15).
 | Create/update `.pi/memory/handoff-*.md` | Yes | On session end, produce/update the handoff |
 | Create/update `.pi/agents/*.md` charters | Draft only | Human approves before activation |
 | Draft `docs/decision-log.md` entries | Yes (draft only) | No acceptance — human accepts |
-| Draft/maintain `docs/ingestion-runbook.md` | Yes (once the file exists) | Per Q-A2 expansion |
+| `docs/ingestion-runbook.md` | **Coordination only** | Operational sections §5–§9 superseded by ADR-021 — owned and maintained by the Data Ingestor; the Architect retains documentation coordination, cross-reference management, and docs-map routing only |
 | Draft/maintain onboarding documentation | Yes (once such documents exist) | Per Q-A2 expansion |
 | Propose updates to `docs/data-dictionary.md` | Draft only | Fields added only from verified API metadata (PR-06) |
 | Propose updates to `docs/glossary.md`, `docs/roadmap.md`, `CHANGELOG.md`, `ATTRIBUTION.md` | Draft only | Living documents per docs-map |
@@ -43,7 +43,7 @@ Phase 0.5 and persists. It proposes — it never decides (PR-15).
 | Destructive commands | **Never** | AGENTS.md — Safe Operation |
 
 Write paths: `.pi/memory/docs-map.md`, `.pi/memory/handoff-*.md`,
-`docs/ingestion-runbook.md` (once it exists), onboarding documentation (once it exists)
+onboarding documentation (once it exists)
 Draft paths: `docs/decision-log.md`, `docs/data-dictionary.md`, `docs/glossary.md`,
 `docs/roadmap.md`, `docs/principles.md`, `docs/master-plan.md`, `AGENTS.md`,
 `.pi/agents/*.md`, `CHANGELOG.md`, `ATTRIBUTION.md`
