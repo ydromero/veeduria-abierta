@@ -1,61 +1,69 @@
-# Proyecto maestro — Veeduría Abierta
+# Master Project — Open Oversight (Veeduría Abierta)
 
-*Documento vivo. Lo cambia solo el humano. Última revisión: 2026-10-19.*
+*A living document. Modified only by humans. Last revised: 2026-10-19.*
 
-## Propósito
-Hacer que los datos de contratación pública colombiana (SECOP II) sean accesibles, comprensibles y verificables para cualquier ciudadano. El objetivo de fondo es educativo: enseñar el **método** de verificación, no solo mostrar resultados.
+## 1. What are we building?
+An open-source civic platform for the auditing, exploration, and forensic analysis of Colombian public procurement (starting with SECOP II). It distinguishes itself by standardizing information according to the global OCDS (Open Contracting Data Standard) model, maintaining the immutability of the raw official data, and—in advanced phases—applying heuristics and predictive models whose outputs are presented strictly as *risk indicators*, never as legal judgments.
 
-Visión de largo plazo: fortalecer la identidad cívica colombiana en torno a la participación informada. Frase guía: *"una vista de Colombia que nadie te muestra"*.
+## 2. Why does it exist?
+To democratize technical scrutiny in the face of the high complexity, fragmentation, and opacity of the public procurement market. The underlying goal is educational: to make data accessible and verifiable for everyone, teaching the **method** of citizen verification rather than merely displaying results.
+Long-term vision: to strengthen Colombian civic identity through informed participation. Guiding phrase: *"a view of Colombia that no one else shows you."*
 
-## Principios (no se negocian)
-1. **Fortalecer, no reinventar ni enfrentar.** Antes de construir algo, se revisa qué ya existe (BuscaSECOP, demoanalitica/anticorrupcion.co, Congreso Visible, MOE) y se busca ser aliado.
-2. **Dato oficial inmutable y separado** de la interpretación de IA, siempre etiquetada y auditable.
-3. **Indicadores, no acusaciones.** Nunca se afirma culpabilidad de una persona o empresa.
-4. **Transparencia sobre los límites.** Cada pantalla declara qué datos usa y su nivel de confiabilidad.
-5. **Sin comportamiento inauténtico.** Nada de astroturfing ni cuentas coordinadas.
-6. **Software público y abierto** (MIT), para que se pueda confiar y contribuir.
-7. **Pensado para sobrevivir a cualquier colaborador** y no pertenecer al gobierno de turno.
-8. El aprendizaje automático solo sirve para descubrimiento investigativo, nunca para maximizar interacción o polémica.
+## 3. Who uses it?
+- **The average citizen:** Seeks to understand how tax money is spent in their municipality, in a simple and educational way.
+- **Civic monitors, journalists, and researchers:** Require in-depth forensic tools (complex filters, network graphs, immutable timelines of OCDS *Releases*) to support their investigations.
+- **Civic developers:** As this is free/open-source software (MIT-licensed), they can leverage the platform’s architecture and data model to build new civic tools.
 
-## Niveles de confiabilidad de los datos
-- **Nivel 1 (confiable vía API de SECOP):** valor del contrato, fechas, estado, entidad, proveedor, modalidad.
-- **Nivel 2 (disponible con vacíos):** fechas de terminación y liquidación, campo BPIN (validar completitud antes de usarlo).
-- **Nivel 3 (no está en SECOP):** ejecución física (SPI/DNP), detalle presupuestal (SIIF), beneficiarios finales (RUB/DIAN).
+## Principles (non-negotiable)
+1. **Strengthen, don’t reinvent or confront.** Before building anything, we examine what already exists (e.g., BuscaSECOP, demoanalitica/anticorrupcion.co, Congreso Visible, MOE) and seek to act as an ally.
+2. **Official data must remain immutable and distinct** from AI-generated interpretations; the latter must always be labeled and auditable.
+3. **Indicators, not accusations.** We never assert the guilt of any individual or company.
+4. **Transparency regarding limitations.** Every screen clearly states which data sources are used and their respective level of reliability.
+5. **No inauthentic behavior.** No astroturfing or coordinated account activity.
+6. **Public, open-source software** (MIT license), ensuring it remains trustworthy and open to contributions.
+7. **Designed to outlast any individual contributor** and remain independent of the current administration.
+8. Machine learning is used exclusively for investigative discovery—never to maximize user engagement or stir controversy.
 
-## Alcance por fase
-**Fase 1 — SECOP II (en curso).** Solo datos de nivel 1.
-- Ingesta desde la API SODA (ADR-001/002/003) a tablas de *staging* con el dato crudo inmutable.
-- Normalización a un modelo propio compatible con OCDS (por definir en `diccionario-datos.md`).
-- Explorador de contratos con paginación y un tablero con indicadores básicos.
-- Fuera de la fase 1: banderas rojas (P-01), cuentas de usuario, capa social, módulos de congreso.
+## Data Reliability Levels
+- **Level 1 (Reliable via SECOP API):** Contract value, dates, status, entity, supplier, and procurement method.
+- **Level 2 (Available but with gaps):** Completion and settlement dates, BPIN field (verify completeness before use). - **Level 3 (not in SECOP):** physical execution (SPI/DNP), budget details (SIIF), ultimate beneficial owners (RUB/DIAN).
 
-**Fases posteriores (sin fecha, sujetas a decisión).**
-- **Motor de banderas rojas (comprometido; fase por definir, P-01).** Indicadores de riesgo documentados uno por uno (fórmula, rutas OCDS, umbrales, límites y falsos positivos), siempre presentados como indicadores y nunca como acusaciones (ADR-008). Requiere validación humana de cada regla.
-- Capa de grafos de entidades, contratos, contratistas y consorcios.
-- Cruces con SIGEP II, Cuentas Claras y votaciones del Congreso.
-- Registro razonado y consultable de los debates del Congreso (hueco que Congreso Visible y la MOE no cubren).
-- Capa social ciudadana, una cuenta por persona (verificación por cédula: difícil, abierta).
-- Módulo de alertas para territorios indígenas: **no se construye** sin resolver soberanía de datos, Convenio 169 / Ley 21 de 1991 y riesgos de seguridad.
+## 4. What is the scope?
+The current scope is limited to the passive ingestion, cleaning, normalization, and exposure of SECOP II data. Algorithmic predictive detection and social features are strictly excluded from Phase 1.
+
+**Phase 1 — SECOP II (ongoing).** Level 1 data only.
+- Ingestion from the SODA API (ADR-001/002/003) into staging tables containing immutable raw data.
+- Normalization into a custom model compatible with OCDS (to be defined in `diccionario-datos.md`).
+- Contract explorer with pagination and a dashboard featuring basic indicators.
+- Out of scope for Phase 1: red flags (P-01), user accounts, social layer, and congressional modules.
+
+**Subsequent phases (no date set; subject to future decision).**
+- **Red flag engine (committed; phase to be determined, P-01).** Risk indicators documented individually (formula, OCDS paths, thresholds, limits, and false positives)—presented strictly as indicators, never as accusations (ADR-008). Requires human validation for each rule.
+- Graph layer for entities, contracts, contractors, and consortia.
+- Cross-referencing with SIGEP II, Cuentas Claras, and congressional voting records.
+- A reasoned, searchable record of congressional debates (addressing a gap not covered by *Congreso Visible* or the MOE).
+- Citizen social layer, with one account per person (identity verification via national ID: challenging, yet open).
+- Alert module for Indigenous territories: **will not be developed** without first resolving issues regarding data sovereignty, ILO Convention 169 / Law 21 of 1991, and security risks.
 
 ## Stack
-Ver ADR-004. Laravel 13 + Livewire 4 + Bootstrap 5 + PostgreSQL 18, todo en Docker con Sail. Sin JavaScript propio salvo lo indispensable.
+See ADR-004. Laravel 13 + Livewire 4 + Bootstrap 5 + PostgreSQL 18, all running in Docker via Sail. No custom JavaScript, except for what is strictly necessary.
 
-## Quién hace qué
-- **Humano (siempre):** visión, prioridades, decisiones, validación de interpretación legal y de datos, voz pública, relaciones con aliados, aprobación de ADRs, secretos, merges.
-- **Agentes (proponen y ejecutan lo reversible y verificable):** investigación, borradores, código, pruebas, revisión, mantenimiento de documentos.
-- El diseño detallado de roles y agentes vive en `.pi/agents/`.
+## Who does what
+- **Human (always):** vision, priorities, decision-making, validation of legal and data interpretations, public-facing communication, partner relations, approval of ADRs (Architecture Decision Records), secret management, and merging code.
+- **Agents (propose and execute reversible, verifiable tasks):** research, drafting, coding, testing, reviewing, and document maintenance.
+- Detailed role and agent definitions are located in `.pi/agents/`.
 
-## Documentos vivos
-| Documento | Se actualiza cuando... |
+## Living documents
+| Document | Updated when... |
 |---|---|
-| `proyecto-maestro.md` | cambia la visión o el alcance (humano) |
-| `registro-decisiones.md` | se toma una decisión relevante |
-| `AGENTS.md` | cambia una regla o convención (humano) |
-| `diccionario-datos.md` (por crear) | se descubre algo de un campo o se agrega un dataset |
-| `runbook-ingesta.md` (por crear) | cambia el proceso de carga o aparece un error nuevo |
-| `CHANGELOG.md` (por crear) | cada cambio integrado |
+| `proyecto-maestro.md` | the vision or scope changes (human) |
+| `registro-decisiones.md` | a significant decision is made |
+| `AGENTS.md` | a rule or convention changes (human) |
+| `diccionario-datos.md` (to be created) | new information about a field is discovered or a dataset is added |
+| `runbook-ingesta.md` (to be created) | the ingestion process changes or a new error occurs |
+| `CHANGELOG.md` (to be created) | every change is integrated |
 
-El mapa completo de qué cambio toca qué documento estará en `.pi/memory/docs-map.md`.
+A complete map of which changes affect which documents can be found in `.pi/memory/docs-map.md`.
 
-## Referencias
-Open Contracting Partnership · estándar OCDS · demoanalitica (CC BY 4.0) · BuscaSECOP · Decidim · MySociety · Ley 1712 de 2014.
+## References
+Open Contracting Partnership · OCDS standard · demoanalitica (CC BY 4.0) · BuscaSECOP · Decidim · MySociety · Law 1712 of 2014.

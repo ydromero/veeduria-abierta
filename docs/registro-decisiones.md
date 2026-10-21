@@ -1,74 +1,68 @@
-# Registro de decisiones (ADR) — Veeduría Abierta
+# Architecture Decision Records (ADR) — Veeduría Abierta
 
-Cada decisión técnica o de producto relevante se registra aquí. Una decisión no se borra: si cambia, se marca `Reemplazada` y se agrega una nueva que la referencia.
+Every significant technical or product decision is recorded here. Decisions are never deleted; if one changes, it is marked as `Replaced`, and a new record is added that references the original.
 
-**Estados:** Aceptada · Pendiente · Reemplazada
-**Quién decide:** el humano. Los agentes proponen y redactan, no aceptan ADRs.
-
----
-
-## ADR-001 — Fuente de verdad: SECOP II vía API SODA
-- **Estado:** Aceptada · 2026-10-19
-- **Decisión:** los datos de contratación salen del SECOP II publicado en datos.gov.co (SODA). Datasets: `jbjy-vk9h` (contratos electrónicos) y `rpmr-utcd`.
-- **Consecuencia:** no se reconstruye un visor de SECOP (ya existe BuscaSECOP). Principio rector: *fortalecer, no reinventar ni enfrentar*.
-
-## ADR-002 — Paginación por cursor con `:id`
-- **Estado:** Aceptada · 2026-10-19
-- **Contexto:** `$offset` se degrada hacia los ~283.500 registros.
-- **Decisión:** la ingesta usa paginación por cursor sobre el campo interno `:id` de Socrata, nunca `$offset` para cargas masivas.
-
-## ADR-003 — Autenticación SODA3 con Key ID + Key Secret
-- **Estado:** Aceptada · 2026-10-19
-- **Decisión:** Basic Auth con Key ID y Key Secret (no `$$app_token`). Las credenciales viven solo en `.env`; ver ADR-009.
-
-## ADR-004 — Versiones del stack fijadas
-- **Estado:** Aceptada · 2026-10-19
-- **Decisión:** se fija lo instalado en la sesión inicial y se actualiza más adelante, como tarea propia.
-- **Versiones verificadas en esa sesión:** Laravel 13.37.0 · PHP 8.5 (imagen `sail-8.5/app`) · Livewire 4.4.7 · laravel/ui 4.6.3 con Bootstrap 5.3.8 instalada (constraint `^5.2.3` en `package.json`) · PostgreSQL 18 (`postgres:18-alpine`) · Vite 8.3.4 · Node 24 (verificado por el humano el 2026-10-20: Node v24.22.0 dentro del contenedor Sail; el Node del host, 22.x, no se usa).
-- **Riesgo conocido:** la mayoría de los ejemplos y modelos conocen mejor Livewire 3. Toda sintaxis de Livewire se verifica contra el código en `vendor/livewire/livewire` o su documentación v4 antes de usarla.
-
-## ADR-005 — Cola de trabajos con driver `database`
-- **Estado:** Aceptada · 2026-10-19
-- **Decisión:** `QUEUE_CONNECTION=database` (la tabla `jobs` ya está migrada). Sin Redis ni Horizon en la fase 1.
-- **Verificado por el humano el 2026-10-20:** `.env` contiene `QUEUE_CONNECTION=database` (el agente no puede leer `.env`).
-- **Revisar cuando:** el volumen de la ingesta histórica haga lenta la cola.
-
-## ADR-006 — Pruebas contra la base `testing`
-- **Estado:** Aceptada · 2026-10-19 (interpretación a confirmar)
-- **Decisión:** las pruebas corren contra la base `testing` que crea Sail, nunca contra la base de desarrollo. Trait por defecto: `RefreshDatabase`.
-- **Pendiente de verificar:** que `phpunit.xml` apunte a `pgsql` / `testing` y no a sqlite.
-
-## ADR-007 — Dato oficial separado de la interpretación de IA
-- **Estado:** Aceptada · 2026-10-19
-- **Decisión:** el dato crudo oficial se guarda inmutable y separado de cualquier texto generado por un LLM. Todo contenido de IA se muestra etiquetado como tal y es auditable (qué modelo, qué versión, qué entrada).
-
-## ADR-008 — Banderas rojas son indicadores de riesgo, no acusaciones
-- **Estado:** Aceptada · 2026-10-19
-- **Decisión:** ninguna pantalla, texto o documento afirma que una persona o empresa cometió un delito. Se habla de "indicador de riesgo". El motor de banderas rojas queda fuera de la fase 1, pero **está comprometido para una fase posterior** (confirmado 2026-10-20). Cuándo entra exactamente: ver P-01.
-
-## ADR-009 — Repositorio público desde el día uno
-- **Estado:** Aceptada · 2026-10-19
-- **Decisión:** `git init` con licencia MIT. El primer commit solo se hace después de verificar que `.gitignore` excluye `.env`, `vendor/`, `node_modules/`, `venv/` y `storage` con datos.
-- **Regla:** ningún secreto entra al repositorio ni a los documentos.
-
-## ADR-010 — Puertos locales propios
-- **Estado:** Aceptada · 2026-10-19
-- **Contexto:** `sonnar-platform` ocupa 80, 5173, 5432 en la misma máquina.
-- **Decisión:** en `.env`: `APP_PORT=8080`, `VITE_PORT=5174`, `FORWARD_DB_PORT=5433`. (Acción manual del humano: PI no puede editar `.env`.)
-- **Verificado por el humano el 2026-10-20:** `.env` contiene los tres valores indicados (el agente no puede leer `.env`).
-
-## ADR-011 — Agentes con modelos mixtos
-- **Estado:** Aceptada · 2026-10-19
-- **Decisión:** algunos agentes usan modelos de Claude y otros modelos económicos. El modelo de cada sesión se registra siempre (`model=` en la línea `METRICS`) para no confundir el efecto del agente con el del modelo.
-
-## ADR-012 — La investigación es referencia, no fuente de verdad
-- **Estado:** Aceptada · 2026-10-19
-- **Decisión:** `docs/referencia/investigacion-plataformas-veeduria-secop.md` informa el diseño pero no manda. Donde difiere de un ADR, gana el ADR. Diferencias conocidas: usa `$offset` y `X-App-Token` (ADR-002/003), asume Livewire 3, Bootstrap 4, Redis/Horizon y reglas heredadas de Sonnar GPON (ADR-004/005). Sus cifras de mercado no se citan como hechos sin verificar la fuente.
+**Statuses:** Accepted · Pending · Replaced
+**Decision-maker:** Humans. Agents may propose and draft records, but they do not have the authority to accept ADRs.
 
 ---
 
-## Pendientes (decisiones abiertas)
-- **P-01** — ¿En qué fase entra el motor de banderas rojas? Ya está decidido que sí entra (ADR-008); falta definir cuándo.
-- **P-02** — Nombre de la capa social/comunitaria (distinta de la plataforma editorial "Veeduría Abierta").
-- **P-03** — ¿Los agentes pueden hacer commits? Por defecto: **no**; proponen y el humano confirma.
-- **P-04** - ¿Se adopta Laravel Boost como fuente de documentación versionada para los agentes (riesgo Livewire 4)? Si se instala, puede reescribir AGENTS.md y CLAUDE.md.
+## ADR-001 — Source of Truth: SECOP II via SODA API
+- **Status:** Accepted · 2026-10-19
+- **Decision:** Procurement data is sourced from SECOP II, as published on datos.gov.co (via the SODA API). Datasets: `jbjy-vk9h` (electronic contracts) and `rpmr-utcd`.
+- **Consequence:** We will not build a new SECOP viewer (as BuscaSECOP already exists). Guiding principle: *strengthen, rather than reinvent or compete*.
+
+## ADR-002 — Cursor-based Pagination using `:id`
+- **Status:** Accepted · 2026-10-19
+- **Context:** The `$offset` parameter suffers from performance degradation as the dataset approaches ~283,500 records.
+- **Decision:** Data ingestion must use cursor-based pagination keyed on Socrata’s internal `:id` field; the `$offset` parameter is never to be used for bulk data loads.
+
+## ADR-003 — SODA3 Authentication via Key ID + Key Secret
+- **Status:** Accepted · 2026-10-19
+- **Decision:** Use Basic Auth with a Key ID and Key Secret (rather than `$$app_token`). Credentials must be stored exclusively in the `.env` file; see ADR-009. ## ADR-004 — Fixed Stack Versions
+- **Status:** Accepted · 2026-10-19
+- **Decision:** The versions installed during the initial session are locked; updates will be handled later as a separate task.
+- **Versions verified during that session:** Laravel 13.37.0 · PHP 8.5 (`sail-8.5/app` image) · Livewire 4.4.7 · `laravel/ui` 4.6.3 with Bootstrap 5.3.8 installed (constraint `^5.2.3` in `package.json`) · PostgreSQL 18 (`postgres:18-alpine`) · Vite 8.3.4 · Node 24 (verified by a human on 2026-10-20: Node v24.22.0 inside the Sail container; the host's Node version, 22.x, is not used).
+- **Known risk:** Most examples and templates are based on Livewire 3. All Livewire syntax must be verified against the code in `vendor/livewire/livewire` or the v4 documentation before use.
+
+## ADR-005 — Job Queue Using the `database` Driver
+- **Status:** Accepted · 2026-10-19
+- **Decision:** `QUEUE_CONNECTION=database` (the `jobs` table has already been migrated). No Redis or Horizon in Phase 1.
+- **Verified by a human on 2026-10-20:** `.env` contains `QUEUE_CONNECTION=database` (the agent cannot read the `.env` file).
+- **Review when:** The volume of historical data ingestion causes the queue to slow down. ## ADR-006 — Testing against the `testing` database
+- **Status:** Accepted · 2026-10-19 (interpretation to be confirmed)
+- **Decision:** Tests run against the `testing` database created by Sail—never against the development database. Default trait: `RefreshDatabase`.
+- **Pending verification:** Ensure `phpunit.xml` points to `pgsql` / `testing` rather than SQLite.
+
+## ADR-007 — Official data kept separate from AI interpretation
+- **Status:** Accepted · 2026-10-19
+- **Decision:** Official raw data is stored in an immutable state, separate from any text generated by an LLM. All AI-generated content must be labeled as such and remain auditable (tracking the model, version, and input used).
+
+## ADR-008 — "Red flags" are risk indicators, not accusations
+- **Status:** Accepted · 2026-10-19
+- **Decision:** No screen, text, or document shall state that an individual or company has committed a crime; instead, the term "risk indicator" is used. The "red flag" engine is excluded from Phase 1 but is **committed for a later phase** (confirmed 2026-10-20). For the exact timeline, see P-01.
+
+## ADR-009 — Public repository from day one
+- **Status:** Accepted · 2026-10-19
+- **Decision:** Initialize with `git init` under an MIT license. The initial commit may only be performed after verifying that `.gitignore` excludes `.env`, `vendor/`, `node_modules/`, `venv/`, and the `storage` directory (containing data).
+- **Rule:** No secrets—of any kind—may be included in the repository or any documentation. ## ADR-010 — Dedicated Local Ports
+- **Status:** Accepted · 2026-10-19
+- **Context:** `sonnar-platform` occupies ports 80, 5173, and 5432 on the same machine.
+- **Decision:** In `.env`: `APP_PORT=8080`, `VITE_PORT=5174`, `FORWARD_DB_PORT=5433`. (Manual human action required: the AI ​​cannot edit the `.env` file.)
+- **Verified by a human on 2026-10-20:** The `.env` file contains the three specified values ​​(the agent cannot read the `.env` file).
+
+## ADR-011 — Agents Using Mixed Models
+- **Status:** Accepted · 2026-10-19
+- **Decision:** Some agents use Claude models, while others use more economical models. The model used for each session is always recorded (`model=` in the `METRICS` line) to ensure that the effects of the agent are not conflated with those of the model.
+
+## ADR-012 — Research serves as a reference, not as the ultimate source of truth
+- **Status:** Accepted · 2026-10-19
+- **Decision:** `docs/referencia/investigacion-plataformas-veeduria-secop.md` informs the design but is not prescriptive. In cases where it conflicts with an ADR, the ADR takes precedence. Known discrepancies include the use of `$offset` and `X-App-Token` (ADR-002/003), assumptions regarding the use of Livewire 3, Bootstrap 4, and Redis/Horizon, as well as rules inherited from Sonnar GPON (ADR-004/005). Market figures cited therein should not be treated as facts without verifying the original source.
+
+---
+
+## Pending Items (open decisions)
+- **P-01** — At what stage should the "red flag" engine be integrated? It has already been decided that it will be included (ADR-008); the specific timing remains to be defined.
+- **P-02** — Name for the social/community layer (distinct from the "Veeduría Abierta" editorial platform).
+- **P-03** — Can agents perform commits? Default: **no**; they submit proposals, which are then confirmed by a human.
+- **P-04** — Should Laravel Boost be adopted as the source for versioned documentation for agents (considering the risk regarding Livewire 4)? If implemented, it may overwrite `AGENTS.md` and `CLAUDE.md`.
