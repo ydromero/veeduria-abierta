@@ -29,4 +29,4 @@ pagination, dashboard with basic indicators.
 |---|---|---|
 | P-01 | Phase for the risk indicator engine | Undefined |
 | P-02 | Name for the social/community layer | Undefined |
-| P-04 | Adopt Laravel Boost as versioned-docs source | Deferred until the Project Architect evaluates it |
+| P-04 | Adopt Laravel Boost as versioned-docs source | Resolved via ADR-015 (2026-10-21): not adopted now; controlled evaluation protocol defined |

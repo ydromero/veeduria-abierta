@@ -75,10 +75,60 @@ Every ADR must state its **Constitutional basis** (`principles.md`), cited by pr
 - **Consequences:** Spanish commit history is not rewritten; the English-imperative convention applies from the first commit after adoption. Spanish-named files are renamed in one dedicated `git mv` commit with cross-references updated in the same commit. `CLAUDE.md` is translated. New artifacts are English from birth. Citizen-facing tone review remains a human decision (PR-15).
 - **Review when:** a significant contributor community with a different working language emerges, or a citizen-facing artifact class does not fit the two-folder boundary.
 
+## ADR-015 — Controlled Evaluation of Laravel Boost
+
+- **Status:** Accepted · 2026-10-21
+- **Origin:** Pending item P-04 (raised in the session handoff of 2026-10-21).
+- **Decision:** Laravel Boost is **not adopted at this time**. A controlled evaluation may be conducted once implementation work (Phase 1) begins, under the protocol below. Adoption is a separate future decision; P-04 is resolved as "not adopted now, evaluation protocol defined".
+
+### Context
+Laravel Boost (documented in this repository's README) is Laravel's official AI-agent tooling: `composer require laravel/boost --dev` followed by `php artisan boost:install`. It provides 15+ tools and skills that let AI agents build Laravel applications while following framework best practices.
+
+### Expected benefits
+1. **Agent effectiveness:** structured tooling for AI agents working on this codebase, aligned with Laravel conventions — directly useful during Phase 1 implementation (ingestion, explorer, dashboard).
+2. **Versioned documentation for agents:** Boost can generate/maintain agent-facing documentation derived from the installed framework version, reducing drift between what agents assume and what Laravel 13 actually does.
+3. **Convention enforcement:** its skills encode Laravel best practices, supporting PR-04 (the project outlasts individual sessions and agents).
+
+### Governance risks identified
+1. **Constitutional overwrite (highest risk):** `boost:install` may modify or overwrite `AGENTS.md` and `CLAUDE.md` — human-owned governance files. An unreviewed install could silently alter the constitutional layer, violating PR-15.
+2. **Environment alteration without approval:** the install commands change `composer.json`, `composer.lock`, and the dev environment. Under P-03 these require explicit human execution and approval.
+3. **Livewire 4 compatibility (unverified):** the handoff of 2026-10-21 notes a potential compatibility concern with Livewire 4. This has NOT been verified — no test has been run and no external research completed. This is a known-unknown.
+4. **Documentation drift:** if Boost becomes the "source of truth" for agent docs, its output could conflict with `AGENTS.md`, `docs/principles.md`, and the docs-map routing rules. Any conflict must be resolved in favor of the human-owned constitutional layer.
+5. **Mixed-model bias (ADR-011):** Boost's guidance may be tuned to particular agents (e.g., Claude Code). Adoption must not create a privileged model.
+
+### AGENTS.md and CLAUDE.md modification risk — mandatory guardrails
+- `AGENTS.md` and `CLAUDE.md` are human-owned. No tool output may be committed to them without the human reviewing every changed line.
+- Before any commit after a Boost install, a full diff of every file Boost touched must be reviewed; changes to the constitutional layer are treated as proposals, never as accepted state.
+- If Boost's generated instructions conflict with `docs/principles.md` or the docs-map, the constitutional layer prevails, and the conflict is recorded as a new pending item.
+
+### Evaluation protocol (future, once Phase 1 begins)
+1. **Preconditions:** clean working tree; a dated handoff exists; the human explicitly authorizes the install in writing.
+2. **Baseline:** capture `composer.lock` hash and full `git status` before install.
+3. **Human executes:** `composer require laravel/boost --dev` and `php artisan boost:install` — never an agent.
+4. **Diff review:** every modified/created file is reviewed against the constitutional layer; the AGENTS.md/CLAUDE.md guardrails above apply.
+5. **Verification:** run the test suite (`./vendor/bin/sail artisan test`); explicitly test Livewire 4 functionality to resolve the known-unknown in risk 3; record results in a dated note under `.pi/memory/`.
+6. **Report:** the Architect produces an evaluation report — what changed, what worked, what conflicts arose — and proposes: adopt / adopt with restrictions / reject. The human decides.
+
+### Acceptance criteria for future adoption
+- All existing tests pass with Boost installed.
+- Livewire 4 compatibility verified (risk 3 resolved — no regressions).
+- Zero unreviewed changes to `AGENTS.md`, `CLAUDE.md`, `docs/principles.md`, or any human-owned file.
+- Agent workflow demonstrably improved (measured against a real Phase 1 task), or at minimum not degraded.
+- A rollback (below) has been rehearsed successfully.
+
+### Rollback strategy
+1. `composer remove laravel/boost --dev` (human executes).
+2. `git checkout -- .` to discard any file changes from `boost:install`, or `git revert` of the evaluation commit(s) if already committed.
+3. Delete any Boost-generated files not tracked by git (identified during the diff review in step 4 of the protocol).
+4. Verify: test suite passes; `AGENTS.md`/`CLAUDE.md` byte-identical to the baseline commit; composer.lock restored to baseline hash.
+5. Record the rollback outcome in `docs/decision-log.md` (P-04 note).
+
+- **Consequences:** This ADR must be updated (not replaced) when the evaluation occurs, preserving the protocol and findings for institutional memory.
+
 ---
 
 ## Pending Items (open decisions)
 - **P-01** — At what stage should the "red flag" engine be integrated? It has already been decided that it will be included (ADR-008); the specific timing remains to be defined.
 - **P-02** — Name for the social/community layer (distinct from the "Veeduría Abierta" editorial platform).
 - **P-03** — Decided 2026-10-21: agents may not perform git commits, merges, deployments, migrations, or any repository/environment-altering action without explicit human approval for that specific action. Agents propose; humans execute.
-- **P-04** — Deferred 2026-10-21: adoption of Laravel Boost as the versioned-docs source for agents is deferred until the Project Architect agent is activated and evaluates the implications (risk of overwriting `AGENTS.md`/`CLAUDE.md` noted in the handoff of 2026-10-21).
+- **P-04** — Resolved via ADR-015 (2026-10-21): Laravel Boost is **not adopted at this time**; a controlled evaluation may be conducted once Phase 1 begins, under the evaluation protocol, acceptance criteria, and rollback strategy defined in ADR-015.
