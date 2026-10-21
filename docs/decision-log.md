@@ -178,8 +178,43 @@ Laravel Boost (documented in this repository's README) is Laravel's official AI-
 - **Context:** Verified against Pikit `subagents` extension sources (`agents.ts`, `config.ts`) and pi docs (`cli.md` §tools): absent `name`/`description` → file skipped; explicit `tools` replaces the entire selection; the subagent default set is read-only and excludes `write`, `edit`, and `bash`. The Project Architect charter grants write authority over `.pi/memory/` artifacts, so its tool list explicitly includes `write, edit` and excludes `bash`, making P-03 (no commits, no migrations, no environment changes) enforceable at tool level.
 - **Consequences:** Agent charters are mirrored in frontmatter (single approval covers both). The "Run tests" charter row was rephrased: agents may propose, coordinate, and review testing activities. Test execution requires explicit authorization and an approved execution path. Template files in `.pi/agents/` are loader-visible; `AGENTS.md` gains an "Agent Files (Pikit Subagents)" section. Changes to agent files require `/reload`.
 
+## ADR-017 — Adoption of the Long-Term Vision Document
+
+- **Status:** Accepted · 2026-10-21
+- **Origin:** Human decision to define the larger purpose Veeduría Abierta serves beyond
+  SECOP, structured around three pillars: civic infrastructure, civic education, and civic
+  community. Drafted by agents, refined and accepted by the human.
+- **Decision:**
+  1. `docs/vision.md` (formerly `docs/vision-draft.md`) is adopted as the **baseline
+     vision document**. It defines the initiative's mission, vision, theory of change,
+     community model, governance principles, public narrative (pending Spanish tone
+     approval), and ten-year aspirations. It contains no software architecture; the
+     Master Plan remains the authority on product scope and phases.
+  2. **Mission scope.** The mission is stated at the level of *public action* (public
+     spending, legislation, public services, citizen participation, and other forms of
+     public information) so it outlives any single dataset. Public procurement (SECOP II /
+     OCDS) remains the **current implementation focus** (Master Plan Phase 1).
+  3. **Domain expansion is gated.** Every new domain (beyond public procurement) requires
+     its **own ADR** with, at minimum: source validation, reliability analysis, scope
+     definition, architectural impact assessment, and human approval. This preserves focus
+     while allowing intentional growth. Domain expansion ADRs are additionally subject to
+     the constitutional rules (PR-05, PR-06, PR-07, PR-09).
+  4. **Governance model.** The initiative operates as an **open network**; no formal
+     association, membership structure, or representative body is assumed or created
+     unless future community needs justify it through an explicit human decision (PR-15).
+- **Constitutional basis:** PR-01 (teach the method), PR-04 (built to outlast),
+  PR-15 (authority is human where it matters). Domain expansions must additionally pass
+  PR-05, PR-06, PR-07, and PR-09 gates.
+- **Consequences / knock-on edits:**
+  - `docs/master-plan.md` §2 should cite `docs/vision.md` as the vision layer — **human
+    edit, proposed, not yet applied** (master-plan.md is modified only by humans).
+  - The public narrative in `docs/vision.md` §6 is **not publishable** until the human
+    approves the Spanish wording and tone (PR-15; AGENTS.md language rules).
+  - `.pi/memory/docs-map.md` gains a routing row for `docs/vision.md` (applied with this ADR).
+
 ## Pending Items (open decisions)
 - **P-01** — At what stage should the "red flag" engine be integrated? It has already been decided that it will be included (ADR-008); the specific timing remains to be defined.
 - **P-02** — Name for the social/community layer (distinct from the "Veeduría Abierta" editorial platform).
 - **P-03** — Decided 2026-10-21: agents may not perform git commits, merges, deployments, migrations, or any repository/environment-altering action without explicit human approval for that specific action. Agents propose; humans execute.
 - **P-04** — Resolved via ADR-015 (2026-10-21): Laravel Boost is **not adopted at this time**; a controlled evaluation may be conducted once Phase 1 begins, under the evaluation protocol, acceptance criteria, and rollback strategy defined in ADR-015.
+- **P-05** — Proposed with ADR-017: the Spanish wording and tone of the public narrative (`docs/vision.md` §6) await human approval before any citizen-facing publication. Master Plan §2 citation of `docs/vision.md` also awaits the human edit.

@@ -18,6 +18,7 @@ or the update explicitly deferred with a reason (AGENTS.md — Definition of Don
 | `docs/principles.md` | `docs/decision-log.md` (amendment ADR), `AGENTS.md` | Human only — Tier E never weakened |
 | `docs/master-plan.md` | `docs/roadmap.md`, `docs/decision-log.md` (if scope changes) | Human only |
 | `docs/decision-log.md` | Files named in the accepted ADR; `CHANGELOG.md` | Human accepts; agents may draft entries |
+| `docs/vision.md` | `docs/master-plan.md` §2 (if mission/scope language shifts); `docs/decision-log.md` (domain-expansion ADRs, per ADR-017) | Human only (accepted baseline via ADR-017); domain additions each require their own ADR |
 | `AGENTS.md` | `.pi/agents/_template.md` (if the authority model changes), this file | Human only |
 | `docs/data-dictionary.md` | Any migration/model touching SECOP fields; `docs/glossary.md` | Fields added only from verified API metadata (PR-06) |
 | `docs/glossary.md` | Citizen-facing UI strings that use the term | Agent proposes; human approves wording |
@@ -40,6 +41,10 @@ or the update explicitly deferred with a reason (AGENTS.md — Definition of Don
   "Run tests" rows rephrased in both (execution requires explicit
   authorization and an approved execution path); `AGENTS.md` gains the
   "Agent Files (Pikit Subagents)" section.
+- **ADR-017 applied (2026-10-21):** `docs/vision.md` adopted as baseline vision document
+  (renamed from `docs/vision-draft.md`); routing row added above; domain-expansion gate
+  (one ADR per domain) recorded. Open knock-on: `docs/master-plan.md` §2 citation of
+  `docs/vision.md` — human edit, proposed in ADR-017.
 - **Open knock-on (tracked):** user-scope charters in `~/.pi/agent/agents/`
   (`gpon-architect`, `issue-reviewer`, `laravel-livewire-reviewer`,
   `livewire-bootstrap-reviewer`, `session-analyst`, `task-guide`) predate

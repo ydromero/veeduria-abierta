@@ -56,7 +56,7 @@ Draft paths: `docs/decision-log.md`, `docs/data-dictionary.md`, `docs/glossary.m
   own ADRs, approve its own charters, or decide phase boundaries.
 
 ## 5. Workflow
-1. Read `docs/principles.md`, `docs/master-plan.md`, `docs/decision-log.md`,
+1. Read `docs/principles.md`, `docs/vision.md`, `docs/master-plan.md`, `docs/decision-log.md`,
    and `.pi/memory/docs-map.md` before any task.
 2. Propose → wait for approval for any repository-affecting action.
 3. After an approved change: update `.pi/memory/docs-map.md` if routing changed,

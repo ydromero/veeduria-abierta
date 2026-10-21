@@ -1,11 +1,11 @@
 # Long-Term Vision — Open Oversight (Veeduría Abierta)
 
-> **Status: Accepted baseline.** Accepted by the human as the baseline vision document,
-> with two refinements applied: (1) mission language broadened beyond public spending
-> to public action generally; (2) governance anchored as an open network, with no formal
-> membership or association structure assumed. Record proposed as ADR-017 (pending entry
-> in the Decision Log).
-> **Version:** 1.0 · **Drafted:** 2026-12 (agent proposal) · **Accepted:** by human decision · **Editor:** Humans only.
+> **Status: Accepted baseline (ADR-017).** Accepted by the human as the baseline vision
+> document of the broader initiative, with refinements applied: (1) mission language
+> broadened beyond public spending to public action generally, with every domain expansion
+> gated behind its own ADR; (2) governance anchored as an open network, with no formal
+> membership or association structure assumed. See ADR-017 in `decision-log.md`.
+> **Version:** 1.0 · **Drafted & accepted:** 2026-10-21 · **Editor:** Humans only.
 >
 > **Scope note.** This document describes the *initiative* (the larger purpose Veeduría
 > Abierta serves beyond SECOP). It deliberately contains no software architecture. The
@@ -40,9 +40,11 @@ time, each with its own evidentiary grounding:
 | Legislation and legislative activity | Potential future domain — requires its own data grounding and human decision |
 | Citizen participation and other public information | Potential future domain — requires its own data grounding and human decision |
 
-The domain list is illustrative, not a commitment: adding any domain is a human decision
-(PR-15), subject to the same constitutional rules as SECOP (immutable raw data, PR-05;
-nothing invented, PR-06; graded honesty, PR-07; indicators, not accusations, PR-09).
+The domain list is illustrative, not a commitment. **Adding any domain requires its own
+ADR** (ADR-017) covering, at minimum: source validation, reliability analysis, scope
+definition, architectural impact assessment, and human approval (PR-15) — and must pass
+the constitutional gates that already govern SECOP (immutable raw data, PR-05; nothing
+invented, PR-06; graded honesty, PR-07; indicators, not accusations, PR-09).
 
 **Relationship to the pillars.**
 - Data and tools → **civic infrastructure** (what we build).
