@@ -1,6 +1,8 @@
 # Documentation Map — Veeduría Abierta
 
 **Status:** Skeleton v0.1 · 2026-10-21
+**Latest session handoff:** `.pi/memory/handoff-2026-10-21-2-data-ingestor-activation.md`
+(supersedes `handoff-2026-10-21.md` for current state — read it first in a new session).
 **Purpose:** Single change-impact routing table. Before completing any task, the
 authoring agent checks this map: every file listed as affected must be updated,
 or the update explicitly deferred with a reason (AGENTS.md — Definition of Done, item 3).
