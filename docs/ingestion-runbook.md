@@ -33,8 +33,14 @@
 1. Pre-flight: dictionary fields verified and human-validated (PR-06 hard gate).
 2. Pagination: cursor keyed on `:id` (ADR-002); throttling behavior documented here as observed.
 3. Writes: append-only immutable staging (PR-05).
-4. Missing critical data: log, report, stop — never a placeholder (PR-06).
+4. Missing critical data: log, report, stop — never a placeholder (PR-06). A null `source_row_id`
+   (SODA `:id`) on a Tier A record is such an anomaly: the identifier is expected on every Tier A
+   row; its nullability is a defensive safeguard only, and any null requires review before the
+   batch is considered clean.
 5. Provenance per record: source dataset, query/pagination window, timestamp.
+6. Release construction: per source row, a substantive-state hash comparison decides whether a
+   new release is created — identical content produces no release (V-1 duplicate collapse).
+   `release_date` is the observation timestamp (§10, decision 4).
 
 ## 6. Error handling and reporting
 - Error classes, retry policy, escalation to the human. *(To be filled during implementation.)*
@@ -52,3 +58,11 @@
 1. **NIT normalization:** all NIT values normalized as `text` in future storage models, regardless of source dataset type (`nit_entidad` is `number` in `jbjy-vk9h`, `text` in `p6dx-8zbt`). Never coerce NITs to numeric types.
 2. **`urlproceso` special case:** metadata type and payload representation differ; the payload carries a nested object structure. Ingestion rules must account for this structure.
 3. **Personal/sensitive data:** fields flagged HUMAN-6 (bank-account) and HUMAN-9 (personal data) require a dedicated ADR before exposure — roadmap backlog item; pending.
+4. **Release construction and observed-date semantics (human clarification, 2026-10-21):** releases
+   are created only when the substantive-state hash of a source row changes (storage architecture
+   baseline, §8). `release_date` records when the state change was **observed at ingestion** — not
+   the real-world date on which the underlying change occurred (SECOP exposes current-state
+   snapshots; the real-world change date is unknowable between ingestion runs). This distinction
+   is binding on all future documentation, mapping specifications, and API naming; the
+   citizen-facing Spanish explanation ("la fecha indica cuándo observamos el cambio, no
+   necesariamente cuándo ocurrió") is pending in `docs/citizen/` (PR-08).
