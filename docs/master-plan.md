@@ -26,7 +26,8 @@ Long-term vision: to strengthen Colombian civic identity through informed partic
 
 ## Data Reliability Levels
 - **Level 1 (Reliable via SECOP API):** Contract value, dates, status, entity, supplier, and procurement method.
-- **Level 2 (Available but with gaps):** Completion and settlement dates, BPIN field (verify completeness before use). - **Level 3 (not in SECOP):** physical execution (SPI/DNP), budget details (SIIF), ultimate beneficial owners (RUB/DIAN).
+- **Level 2 (Available but with gaps):** Completion and settlement dates, BPIN field (verify completeness before use). 
+- **Level 3 (not in SECOP):** physical execution (SPI/DNP), budget details (SIIF), ultimate beneficial owners (RUB/DIAN).
 
 ## 4. What is the scope?
 The current scope is limited to the passive ingestion, cleaning, normalization, and exposure of SECOP II data. Algorithmic predictive detection and social features are strictly excluded from Phase 1.
