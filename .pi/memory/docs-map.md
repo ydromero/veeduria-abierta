@@ -41,10 +41,18 @@ or the update explicitly deferred with a reason (AGENTS.md — Definition of Don
   "Run tests" rows rephrased in both (execution requires explicit
   authorization and an approved execution path); `AGENTS.md` gains the
   "Agent Files (Pikit Subagents)" section.
+- **ADR-018 applied (2026-10-21):** OCDS storage strategy recorded (Hybrid); ADR numbering
+  reconciled — storage = ADR-018, OCDS pin draft = ADR-019, personal-data draft = ADR-020;
+  P-05 = storage (resolved), narrative-tone item renumbered to P-06; data dictionary,
+  conceptual model, and roadmap cross-references updated; decision-log ADR-004/006/010
+  headings repaired (were appended mid-line).
+- **Master Plan v2 applied (2026-10-21):** revision 0.2 written to `docs/master-plan.md`
+  per human approval; changelog entry queued in `CHANGELOG.md` [Unreleased]. P-06 now
+  covers only the narrative tone. Next gates: ADR-019/ADR-020 acceptance.
 - **ADR-017 applied (2026-10-21):** `docs/vision.md` adopted as baseline vision document
   (renamed from `docs/vision-draft.md`); routing row added above; domain-expansion gate
-  (one ADR per domain) recorded. Open knock-on: `docs/master-plan.md` §2 citation of
-  `docs/vision.md` — human edit, proposed in ADR-017.
+  (one ADR per domain) recorded. Master Plan v2 drafted for human review
+  (`.pi/artifacts/draft-master-plan-v2.md`); P-06 covers its adoption.
 - **Open knock-on (tracked):** user-scope charters in `~/.pi/agent/agents/`
   (`gpon-architect`, `issue-reviewer`, `laravel-livewire-reviewer`,
   `livewire-bootstrap-reviewer`, `session-analyst`, `task-guide`) predate

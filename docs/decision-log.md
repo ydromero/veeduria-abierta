@@ -58,7 +58,9 @@ Every ADR must state its **Constitutional basis** (`principles.md`), cited by pr
 
 ## ADR-003 — SODA3 Authentication via Key ID + Key Secret
 - **Status:** Accepted · 2026-10-19
-- **Decision:** Use Basic Auth with a Key ID and Key Secret (rather than `$$app_token`). Credentials must be stored exclusively in the `.env` file; see ADR-009. ## ADR-004 — Fixed Stack Versions
+- **Decision:** Use Basic Auth with a Key ID and Key Secret (rather than `$$app_token`). Credentials must be stored exclusively in the `.env` file; see ADR-009.
+
+## ADR-004 — Fixed Stack Versions
 - **Status:** Accepted · 2026-10-19
 - **Decision:** The versions installed during the initial session are locked; updates will be handled later as a separate task.
 - **Versions verified during that session:** Laravel 13.37.0 · PHP 8.5 (`sail-8.5/app` image) · Livewire 4.4.7 · `laravel/ui` 4.6.3 with Bootstrap 5.3.8 installed (constraint `^5.2.3` in `package.json`) · PostgreSQL 18 (`postgres:18-alpine`) · Vite 8.3.4 · Node 24 (verified by a human on 2026-10-20: Node v24.22.0 inside the Sail container; the host's Node version, 22.x, is not used).
@@ -68,7 +70,9 @@ Every ADR must state its **Constitutional basis** (`principles.md`), cited by pr
 - **Status:** Accepted · 2026-10-19
 - **Decision:** `QUEUE_CONNECTION=database` (the `jobs` table has already been migrated). No Redis or Horizon in Phase 1.
 - **Verified by a human on 2026-10-20:** `.env` contains `QUEUE_CONNECTION=database` (the agent cannot read the `.env` file).
-- **Review when:** The volume of historical data ingestion causes the queue to slow down. ## ADR-006 — Testing against the `testing` database
+- **Review when:** The volume of historical data ingestion causes the queue to slow down.
+
+## ADR-006 — Testing against the `testing` database
 - **Status:** Accepted · 2026-10-19 (interpretation to be confirmed)
 - **Decision:** Tests run against the `testing` database created by Sail—never against the development database. Default trait: `RefreshDatabase`.
 - **Pending verification:** Ensure `phpunit.xml` points to `pgsql` / `testing` rather than SQLite.
@@ -84,7 +88,9 @@ Every ADR must state its **Constitutional basis** (`principles.md`), cited by pr
 ## ADR-009 — Public repository from day one
 - **Status:** Accepted · 2026-10-19
 - **Decision:** Initialize with `git init` under an MIT license. The initial commit may only be performed after verifying that `.gitignore` excludes `.env`, `vendor/`, `node_modules/`, `venv/`, and the `storage` directory (containing data).
-- **Rule:** No secrets—of any kind—may be included in the repository or any documentation. ## ADR-010 — Dedicated Local Ports
+- **Rule:** No secrets—of any kind—may be included in the repository or any documentation.
+
+## ADR-010 — Dedicated Local Ports
 - **Status:** Accepted · 2026-10-19
 - **Context:** `sonnar-platform` occupies ports 80, 5173, and 5432 on the same machine.
 - **Decision:** In `.env`: `APP_PORT=8080`, `VITE_PORT=5174`, `FORWARD_DB_PORT=5433`. (Manual human action required: the AI ​​cannot edit the `.env` file.)
@@ -212,9 +218,268 @@ Laravel Boost (documented in this repository's README) is Laravel's official AI-
     approves the Spanish wording and tone (PR-15; AGENTS.md language rules).
   - `.pi/memory/docs-map.md` gains a routing row for `docs/vision.md` (applied with this ADR).
 
+## ADR-018 — OCDS Storage Strategy for Phase 1: Hybrid (Releases Canonical + Derived Current-State Projection)
+
+- **Status:** Accepted · 2026-10-21
+- **Origin:** Pending item P-05 (Q-1 constraint of the Phase 1 plan). Drafted from the
+  verified ground truths of the data dictionary v1.0 and conceptual validations V-1…V-4.
+  Numbering reconciled per human decision: the draft artifacts had used "ADR-017" for the
+  storage strategy; the recorded ADR-017 is the Long-Term Vision Document adoption, so the
+  storage strategy is recorded here as ADR-018, shifting the OCDS-pin draft to ADR-019 and
+  the personal-data draft to ADR-020.
+- **Constitutional basis:** PR-01, PR-04, PR-05, PR-06, PR-07, PR-08, PR-15 (full analysis
+  in the draft artifact `.pi/artifacts/draft-adr-p05-ocds-strategy.md`).
+- **Context (verified ground truths):** SODA publishes current-state snapshots, not native
+  releases; any release structure in the normalized layer is therefore synthesized from
+  successive snapshot ingestions — a derivation permitted by PR-06's derivation carve-out
+  only when computed from validated fields, with a documented rule, and labeled derived.
+  The raw layer is already append-only and immutable (PR-05/ADR-007) regardless of this
+  choice; this ADR governs only the normalized layer. V-1: `id_contrato` is a logical
+  business identifier with source-side duplicate re-publications. V-4: authoritative
+  contract↔process linkage is `proceso_de_compra` ↔ `id_del_portafolio` across three
+  identifier namespaces. V-2: process → contract is 1:N.
+- **Decision (Option C — Hybrid):**
+  1. The normalized layer stores **immutable releases as the canonical structure** — one
+     release per observed state change per process/contract, constructed by a documented
+     state-hash comparison rule; source-side duplicates (V-1) produce no new release.
+  2. A **derived current-state projection** (latest release per ocid) is materialized,
+     labeled derived, and fully traceable (projection → release → raw). The projection
+     must never become an independent source of truth (explicit human condition).
+  3. Sentinel values (`No Definido`, `No Adjudicado`, …) are preserved per release exactly
+     as published; history never "cleans" the past (PR-06).
+  4. Records/current-state-only (Option B) is rejected: it forfeits the master-plan's
+     "immutable timelines" persona commitment and loses change history bounded by
+     ingestion cadence from the first ingestion day forward.
+- **Explicit non-decisions (to prevent scope creep):** OCDS version pinning (resolved by
+  ADR-019); normative field mapping (dictionary candidates become eligible for elevation
+  only after ADR-018 + ADR-019); `ocid` format finalization; release-tag ↔
+  `estado_contrato`/`fase` mapping (HUMAN-5, human-gated); Tier B amendments absorption
+  (`u8cx-r425`); interaction with personal/sensitive data exposure (ADR-020).
+- **Consequences:** the conceptual model gains the normalized-layer structure definition
+  (conceptual only); the ingestion runbook gains a release-construction rule section
+  (state-hash comparison, cadence, projection staleness = rebuild on new release); storage
+  architecture (tables, migrations) remains out of scope until ADR-019 and ADR-020 close,
+  per the human's sequencing decision.
+
+## ADR-019 — OCDS Version Pin: 1.1.5
+
+- **Status:** Accepted · 2026-10-21 (OCDS 1.1.5 pinned)
+- **Origin:** ADR-018 (accepted: Option C — canonical releases + derived current-state projection) declares OCDS version pinning a condition-of-acceptance follow-up.
+- **Constitutional basis:** PR-04 (built to outlast — pin a stable, mature, well-tooled version rather than a moving target); PR-06 (nothing invented — every claim below verified against official standard documentation); PR-08 (limitations stated — what was and was not verified); PR-15 (authority is human).
+
+## Context
+
+ADR-018 fixed the structural strategy (releases canonical + derived current-state projection) but explicitly deferred version pinning. This ADR resolves the pin so that normative mapping work can begin.
+
+## Verification record (2026-10-21, official documentation)
+
+| # | Fact verified | Source | Result |
+|---|---|---|---|
+| 1 | Latest stable OCDS version | `standard.open-contracting.org/latest/` — all pages served as **"OCDS v1.1.5"** | ✅ 1.1.5 is the current stable documented version |
+| 2 | Is 1.2 stable? | Official changelog (History → Changelog): newest *versioned* entry is `[1.1.5] - 2020-08-20`; all newer entries are "iterative improvements" to non-normative content (documentation, translations) | ✅ 1.2 does **not** appear as a stable release; it remains in development. Pinning 1.1.5 does not conflict with any stable 1.2 |
+| 3 | Release semantics | Getting Started → Releases and Records | ✅ Releases are **immutable**, one per change, many per contracting process; the collection of releases constitutes the change history; each release carries an `ocid` |
+| 4 | Record semantics | Same page | ✅ A record is an **index of all releases** for one contracting process, optionally containing a **compiled release** (latest value per field) and a **versioned release** (field-level change history) |
+| 5 | ocid construction | Schema → Identifiers | ✅ ocid = registered prefix (`ocds-` + 6-char lowercase alphanumeric, issued by OCP) + publisher's internal identifier. Case-sensitive. Publisher-namespace requirements deprecated |
+| 6 | Identifier scoping | Same page | ✅ Release `id`, award `id`, and contract `id` are **unique within the scope of the contracting process** (not globally). `(ocid, id)` disambiguates |
+| 7 | Framework agreements | Same page | ✅ Official: "Multiple contracts may refer to a single award, as in the case of a framework contract where multiple contracts are issued against a single award." Contracts cross-reference `awardID` | 
+| 8 | Organization identifiers | Same page | ✅ Organization ID = `scheme` (register prefix, e.g., GB-COH) + `id`; primary registers strongly preferred. A **personal identifiers guidance** page exists for natural persons |
+
+**Verification method and limits (PR-08):** verification was performed against the official documentation website (normative prose and changelog), not by validating sample data against the JSON schema artifacts. A schema-level validation exercise (constructing one synthetic release and validating with the official tooling) is listed below as a condition before normative mapping is declared complete.
+
+## Decision
+
+**Pinned: OCDS version 1.1.5** is the normative target for all mapping, release construction, and export work in Phase 1 (accepted 2026-10-21).
+
+Rationale:
+
+1. **It is the current stable standard.** No stable 1.2 exists to pin; pinning a dev version would violate PR-04 (durable technology) and create churn risk.
+2. **It is mature and tooled.** Canonical codelists at stable URLs, a Data Review Tool, and a reference merge implementation exist for the 1.1 line.
+3. **It matches the accepted strategy exactly.** ADR-018's Option C (canonical releases + derived current-state projection) is structurally identical to OCDS 1.1's own model: releases are canonical and immutable; the compiled release is the derived latest-values view; the versioned release provides field-level history. Our "current-state projection" is, in OCDS terms, a **compiled release** — the standard itself endorses the hybrid.
+4. **Versioned releases support PR-01 directly.** OCDS 1.1's versioned release (per-field change history) is a standardized mechanism for "teach the method": citizens can see *how each field changed*, not just that it changed.
+
+## Implications
+
+### 1. ocid construction
+- **Prefix registration is required** for published OCDS data: an `ocds-XXXXXX` prefix is issued by the Open Contracting Partnership. Registering it is **communication with an external partner — a human decision and human action (PR-15)**. The Architect cannot and must not register it.
+- **Internal identifier (verified against the identifier catalog, dictionary §9):** the process-level internal identifier is `proceso_de_compra` / `id_del_portafolio` (`CO1.BDOS.*`, authoritative per V-4). Candidate process ocid: `ocds-<prefix>-CO1.BDOS.<n>`.
+- Contract-level identity: OCDS scopes contract `id` uniqueness *within the contracting process* — which matches V-1 exactly: `id_contrato` (`CO1.PCCNTR.*`) is unique within its process scope, not globally. **OCDS's own scoping rule is independent confirmation of V-1's finding.**
+- Until the prefix is registered, normalized-layer ocids may be constructed with an explicitly-marked provisional prefix constant, on the condition that any public OCDS export before registration is forbidden (PR-06: nothing presented as standard-conformant that isn't).
+- The three namespaces (`CO1.BDOS.*`, `CO1.REQ.*`, `CO1.PCCNTR.*`) remain distinct (V-4); only `CO1.BDOS.*` feeds the ocid. `CO1.REQ.*` (`id_del_proceso`) may map to OCDS `relatedProcesses` — candidate only.
+
+### 2. Release structure
+- Our synthesized releases (one per observed state change, per ADR-018) map to OCDS releases: `ocid`, release `id` (unique within process scope — candidates: platform change-event or hash-based), release `date` (candidate: the `ultima_actualizacion` timestamp of the triggering snapshot — Level 2, flagged), and `tag` (requires the HUMAN-5 legal vocabulary mapping — remains human-gated).
+- Sentinel values are preserved inside releases as published (PR-06) — OCDS permits open codelists and string fields; where a closed codelist would conflict with a sentinel, the field is either unmapped or handled per-field in mapping work (limitations stated per PR-08).
+
+### 3. Record structure
+- **The current-state projection (ADR-018) should be implemented as a compiled release** per OCDS 1.1: derived by the standard merge rules (identifier merge for suppliers — note the changelog's 1.0→1.1 supplier merge change — and object merge otherwise), labeled derived, traceable to releases.
+- **Versioned release** (field-level history) is an optional future capability of the same structure: it directly serves PR-01 (citizens see how each field changed). Recommended as a Phase 2 citizen-facing feature, not Phase 1 scope — recorded here to prevent re-litigation.
+- ADR-018's principle is reinforced: **the compiled release must never become an independent source of truth** — it is always derivable from releases (the human's explicit condition).
+
+### 4. Future mapping decisions
+- Normative mapping now has a fixed target: OCDS 1.1.5 codelists and schema (`procurementMethod`, `tenderStatus`, `contractStatus`, `partyRole`, `itemClassificationScheme` — which includes UNSPSC, matching `codigo_de_categoria_principal`/`codigo_principal_de_categoria`).
+- The dictionary's OCDS-mapping candidates (all marked "pending P-05 ADR") become eligible for elevation to normative candidates against **1.1.5** specifically.
+- Organization identifier `scheme` values (Colombian registers, e.g., RUE/NIT) must be resolved via org-id.guide during mapping — candidate task, human-approved.
+- Extensions likely relevant later (recorded, not decided): `lots` (numero_de_lotes), `bids` statistics (process-side response counts), `location` (execution addresses) — all Tier C or mapping-phase concerns.
+
+## Consequences
+
+- Mapping work proceeds against **1.1.5** only; any 1.2 stabilization is a future re-evaluation trigger (new ADR, not silent upgrade).
+- **Human actions unlocked by acceptance:** (1) ocid prefix registration with OCP (external communication — your decision and action); (2) HUMAN-5 legal vocabulary review for release tags; (3) authorization of the schema-validation exercise.
+- **Architect actions unlocked:** elevate dictionary mapping candidates to normative-candidate status against 1.1.5; draft the release-construction rule for the runbook (state-hash comparison, cadence, release `id`/`date` candidates).
+- The Personal and Sensitive Data ADR (next gate) can now reference concrete structures: personal data in releases is immutable history — its exposure rules must account for the fact that compiled/versioned views will surface historical values (a material input to that ADR).
+
+## Constitutional Test checklist (principles.md §6)
+
+| # | Test | Status | Note |
+|---|---|---|---|
+| 1 | Method (PR-01) | Pass | Versioned-release capability identified as the standard's mechanism for field-level method transparency |
+| 2 | Verdict (PR-02) | Pass | No civic conclusions |
+| 3 | Ecosystem (PR-03) | Pass | Aligns with the global standard and its tooling; strengthens interoperability |
+| 4 | Permanence (PR-04) | Pass | Stable version pinned; dev-version churn avoided; re-evaluation trigger documented |
+| 5 | Lineage (PR-05) | Pass | Compiled release defined as derived; never an independent source of truth |
+| 6 | Invention (PR-06) | Pass | All standard claims verified against official docs; unverified items flagged (schema-level validation pending) |
+| 7 | Reliability (PR-07) | Pass | Level-2 timestamps flagged as release-`date` candidates |
+| 8 | Limitations (PR-08) | Pass | Verification limits stated; sentinel/closed-codelist tension flagged for mapping phase |
+| 9 | Indicators (PR-09) | Pass | N/A |
+| 10 | Authenticity (PR-10) | Pass | N/A |
+| 11 | Vulnerability (PR-11) | Pass | N/A |
+| 12 | Labeling (PR-12) | Pass | N/A |
+| 13 | Purpose (PR-13) | Pass | N/A |
+| 14 | Secrecy (PR-14) | Pass | No credentials; prefix registration is public and human-executed |
+| 15 | Authority (PR-15) | Pass | Decision reserved to the human; prefix registration and partner communication explicitly human actions |
+
+---
+
+---
+
+## ADR-020 — Personal and Sensitive Data Handling (Exposure, Restriction, and Disclosure Rules)
+
+- **Status:** Accepted · 2026-10-21 (register binding; LQ-1…LQ-6 remain open legal questions)
+- **Origin:** Data Dictionary v1.0 §6 Decision 3; roadmap backlog (2026-10-21).
+- **Constitutional basis:** PR-05 (raw data inviolable — this ADR must not propose mutating it); PR-07 (graded honesty); PR-08 (limitations stated); PR-09 (indicators, not accusations — directly limits profiling features); PR-14 (secrecy clause for restricted data handling); PR-15 (authority is human — legal interpretation is explicitly a human domain); PR-02/PR-01 (evidence and method, not verdicts — shapes disclosure design).
+- **Prerequisite satisfied:** ADR-018 (releases canonical) and ADR-019 (OCDS 1.1.5 pinned) — this ADR now references concrete structures: personal data exists as immutable history in releases; compiled releases surface latest values; a versioned-release feature would surface full field-level history.
+
+## Context
+
+Data Dictionary v1.0 flags two categories of fields whose civic value must be weighed against privacy exposure:
+
+- **HUMAN-6 — bank/financial data** (`nombre_del_banco`, `tipo_de_cuenta`, `n_mero_de_cuenta`): payment-account details. Level 2, predominantly sentinel (`No definido`) in samples, but populated for some contracts.
+- **HUMAN-9 — personal data of natural persons** (16 fields across both Tier A datasets): legal representatives (name, nationality, domicile, ID type/number, gender), supervisors, ordenadores del gasto/pago (names, ID types/numbers), and the process-side awarding officer (`nombre_del_adjudicador`).
+- **Adjacent — supplier identity of natural persons:** `tipodocproveedor` includes `Cédula de Ciudadanía`; for sole-trader suppliers, `documento_proveedor` **is a personal ID number**. V-3 establishes contract-side supplier fields as authoritative for identity — so this ADR cannot simply exclude them without breaking identity resolution. This tension is a core design problem of this ADR.
+
+**The defining structural fact (from ADR-018/019):** the raw layer is immutable and append-only (PR-05), and releases are immutable history. Personal data ingested in raw payloads **persists permanently and cannot be retroactively redacted without violating PR-05**. Therefore this ADR governs **exposure, normalization, search, and disclosure** — it cannot govern retention of raw data beyond a decision *not to ingest* (which would violate the completeness of the raw layer and is not recommended — see §1).
+
+**The defining civic fact:** these fields are **already published by the state** on datos.gov.co and the SECOP platform (Ley 1712 de 2014 transparency regime). The project does not originate this data. The privacy question is therefore not publication per se, but **amplification**: a general-purpose search index over personal ID numbers makes data more accessible, more linkable, and more profileable than the official source — and that amplification is what this ADR must govern.
+
+## 1. Raw-layer retention rules (proposal)
+
+- **Retain everything; mutate nothing.** Raw payloads are stored unmodified, including all HUMAN-6/HUMAN-9 fields (PR-05 is Tier-absolute: any "sanitize-at-ingestion" proposal would mutate official data and is rejected as a matter of constitutional compliance).
+- **Access control is operational, not constitutional:** raw-layer internal access should be restricted to ingestion and audit paths; no raw values surface through application APIs. This is an implementation constraint for storage architecture, recorded here as a requirement.
+- **Exception pathway — none proposed.** Even HUMAN-6 fields are part of the official record; excluding them at ingestion would create incomplete provenance for payment-related verification (e.g., "which bank failed to pay this supplier" is a legitimate civic question).
+
+## 2. Normalized-layer exposure rules (proposal)
+
+The normalized layer is a *derivation* (ADR-018) and therefore fully governable. Proposed default posture, per field class — **every row requires your validation**:
+
+| Field class | Fields | Proposed treatment | Rationale |
+|---|---|---|---|
+| Bank data (HUMAN-6) | `nombre_del_banco`, `tipo_de_cuenta`, `n_mero_de_cuenta` | **Excluded from the normalized layer** (raw-only). No mapping, no projection, no display | No civic verification value that offsets identity-theft/fraud exposure; account numbers are not procurement substance |
+| Legal representatives (HUMAN-9a) | `nombre_representante_legal`, `nacionalidad_representante_legal`, `domicilio_representante_legal`, `tipo_de_identificaci_n_representante_legal`, `identificaci_n_representante_legal`, `g_nero_representante_legal` | **Name: map** (persons acting in a public contracting capacity — accountability value). **ID number/domicile/gender: exclude from normalized layer**; ID type alone is low-sensitivity but low-value — propose exclude | Names of decision-actors serve accountability; ID numbers enable identity aggregation with no verification gain |
+| Supervisors / ordenadores (HUMAN-9b) | `nombre_supervisor`, `nombre_ordenador_del_gasto`, `nombre_ordenador_de_pago` (+ their document types/numbers — 6 fields) | **Names: map with the same accountability rationale.** **Document numbers: exclude** | Same logic as 9a; these are public officials acting in role |
+| Awarding officer (HUMAN-9c) | `nombre_del_adjudicador` (p6dx-8zbt) | **Propose: exclude from Phase 1 normalized layer**, revisit with HUMAN-5 legal review | Sentinel-heavy, role unclear ("user who executed the award action" — possibly a platform operator, not a decision-maker; [HUMAN-9] flag open) |
+| Supplier identity — legal persons | `documento_proveedor` where `tipodocproveedor` = NIT | **Map in full** | Corporate identifiers are public business data; V-3 authority rule applies; OCDS `identifier/scheme` expects it (org-id.guide scheme resolution pending) |
+| Supplier identity — natural persons | `documento_proveedor` where `tipodocproveedor` = `Cédula de Ciudadanía` | **Map in the normalized layer (identity resolution requires it — V-3), but apply disclosure-layer masking and search restrictions (§3–§4)** | Breaking identity resolution for sole traders would corrupt V-3 and OCDS party structure; masking belongs at the disclosure layer, not the data layer |
+
+## 3. Citizen-facing disclosure rules (proposal)
+
+- **Default principle (PR-02/PR-09):** display what the citizen needs to *verify procurement substance*; do not display what enables *profiling of private persons*.
+- **Names of role-actors** (representative, supervisor, ordenadores): display in contract detail views, labeled with their role (source-published, PR-08: state that the source publishes this data).
+- **Personal ID numbers of natural persons:** never rendered in full on any screen. Proposed: masked display (`***********1234` style) with a provenance link to the official SECOP source record (`urlproceso`, PR-01) — the citizen who genuinely needs the full value re-verifies at the source, preserving the verification path without our platform becoming the easiest aggregation point.
+- **Bank data:** never displayed; the fields' existence is stated in the limitations note (PR-08: "payment account details exist in the source record but are not shown here").
+- **Masking is applied at the disclosure/template layer**, never by mutating stored values — masked rendering is a presentation rule, keeping the normalized layer honest and the traceability chain intact.
+
+## 4. Search and indexing restrictions (proposal)
+
+- **No full-text or exact-match search index over excluded fields** (all HUMAN-6, all ID numbers of natural persons). Search infrastructure must not build inverted indexes over them even where stored.
+- **`documento_proveedor` (natural persons):** search by supplier permitted via name, not by ID number, in Phase 1 — searching by cédula is the single highest-amplification profiling feature and is **proposed as forbidden in Phase 1**. This is also PR-09-adjacent: building person-centric lookup by government ID approaches surveillance functionality the platform's principles do not authorize.
+- **Names of role-actors:** indexable and searchable (accountability function; public officials in role).
+- **Aggregation caution:** features that join a natural person across many contracts ("every contract where X's cédula appears") are **proposed as out of scope** pending the human's explicit decision — such features are exactly the "red flag"-adjacent territory ADR-008 reserves for later, human-validated design.
+
+## 5. Historical release considerations
+
+- Because releases are immutable (ADR-018), exposure rules apply **per release at render time**, not by rewriting history. A masking or exclusion rule change is applied by re-rendering disclosure views — never by mutating releases.
+- **Compiled release** surfaces latest values: if a field is excluded from normalization, it is absent from the compiled view at every point in history — the exclusion is retroactive-by-derivation, without touching immutable data. This is a structural advantage of the hybrid strategy; state it explicitly in mapping rules.
+- **Versioned release (Phase 2 candidate):** field-level history for personal fields would expose *every historical value* of, e.g., a representative's ID. Propose: **personal fields are excluded from versioned-release history features** by default (the accountability value of change-history is procurement-substance fields: values, dates, statuses — not a person's domicile history).
+- **No deletion pathway exists for raw/releases** (PR-05). If a legal requirement to erase data ever arises (e.g., SIC order), the compliance mechanism is access/exposure restriction, and that reality must be recorded as a limitation (PR-08) — flagged for your legal review (§7, LQ-4).
+
+## 6. Transparency vs. privacy trade-offs (the framing for your decision)
+
+- **The platform re-publishes; it does not originate.** Ley 1712 de 2014 makes this data public; SECOP's own interface displays these fields. The project's marginal effect is **aggregation, searchability, and permanence** — the dimensions worth governing.
+- **PR-01/PR-02 pull toward full disclosure with method:** hiding source-published data undermines "teach the method" (a citizen comparing our masked view with SECOP's unmasked view may lose trust).
+- **PR-09/PR-10 pull toward restriction:** effortless person-level aggregation across millions of contracts creates surveillance capability the platform never justified.
+- **The proposed synthesis:** substance transparent, identity protected — display role-actor names and all procurement substance; keep private identifiers out of the normalized layer and out of search; route any genuine identity need to the official source via provenance links.
+- **An honest cost of this synthesis (PR-08):** sole-trader supplier identity becomes *harder* to trace on our platform than on SECOP itself. That limitation must be stated wherever supplier identity is shown.
+
+## 7. Colombian legal considerations requiring human review (questions, not conclusions)
+
+The Architect does not interpret law (PR-15). The following are framed for your review, ideally with legal counsel:
+
+- **LQ-1 — Habeas data scope:** Ley 1581 de 2012 (personal data protection; Superintendencia de Industria y Comercio as authority) and its relationship to data whose publication is mandated by the transparency regime (Ley 1712 de 2014). Does the "data made public by law" condition exclude SECOP-published personal fields from habeas data duties in our context, or do duties (e.g., purpose limitation) survive re-publication by a third party?
+- **LQ-2 — Role-actor data:** are legal representatives, supervisors, and ordenadores del gasto/pago acting in a public capacity such that their names/IDs fall outside private-data treatment — and does that differ for natural-person suppliers (cédula as merchant identity)?
+- **LQ-3 — Amplification responsibility:** does re-publication with added search/aggregation capability create duties beyond the source's (e.g., "seamless access" standards, deletion requests forwarded to us)?
+- **LQ-4 — Erasure orders:** if a regulator orders suppression of a person's data, what is the compliant mechanism given immutable raw/releases — exposure suppression with documented limitation, or something else?
+- **LQ-5 — Gender field:** `g_nero_representante_legal` has no procurement-verification value; is its continued ingestion-mapping justified at all, or should it be raw-only?
+- **LQ-6 — Minors / sensitive categories:** standard Ley 1581 sensitive-category rules (none observed in current fields, but the flag should exist in mapping rules for future datasets).
+
+## 8. Fields requiring masking, redaction, restriction, or exclusion (consolidated register — accepted as binding)
+
+| Treatment | Fields | Layer |
+|---|---|---|
+| **Exclusion from normalized layer** (raw-only) | All HUMAN-6 (3 bank fields); all natural-person ID numbers (`identificaci_n_representante_legal`, 3 ordenador/supervisor document-number fields); `domicilio_representante_legal`; `g_nero_representante_legal` (pending LQ-5); `nombre_del_adjudicador` (pending HUMAN-9c review) | Normalized, search, display |
+| **Map, but masked display + no ID search** | `documento_proveedor` for `Cédula de Ciudadanía` suppliers | Display/search layers only |
+| **Map and display with role labels** | Role-actor names (`nombre_representante_legal`, `nombre_supervisor`, `nombre_ordenador_del_gasto`, `nombre_ordenador_de_pago`) | All layers |
+| **Map in full** | All procurement-substance fields; `documento_proveedor` for NIT suppliers | All layers |
+| **Phase 1 forbidden features** | Search by cédula; person-across-contracts aggregation | Platform capability level |
+
+Every row above is a **proposal requiring your validation** (PR-06/PR-15); the register is designed to become the binding rule the mapping phase consumes.
+
+## Consequences
+
+- **If accepted:** the mapping phase receives a binding exposure register; storage architecture inherits hard requirements (raw access restriction, no-index constraints, disclosure-layer masking); the dictionary's HUMAN-6/HUMAN-9 flags gain dispositions; PR-08 limitation text is defined for supplier-identity and bank-data gaps.
+- **If edited:** the register structure survives; treatments change.
+- **In all cases:** raw-layer immutability is untouched (PR-05 compliant); the final legal posture depends on your review of LQ-1…LQ-6, ideally with counsel.
+
+## Constitutional Test checklist (principles.md §6)
+
+| # | Test | Status | Note |
+|---|---|---|---|
+| 1 | Method (PR-01) | Pass | Provenance links preserve verification paths for masked values; limitations stated |
+| 2 | Verdict (PR-02) | Pass | No conclusions about persons; role-actor display is factual, source-published |
+| 3 | Ecosystem (PR-03) | Pass | Defers identity needs to the official source rather than duplicating surveillance-adjacent capability |
+| 4 | Permanence (PR-04) | Pass | Rules documented as a durable register; retroactive-by-derivation mechanism avoids fragile exceptions |
+| 5 | Lineage (PR-05) | Pass | Raw immutable; no mutation proposed anywhere |
+| 6 | Invention (PR-06) | Pass | Every field disposition traces to dictionary flags; legal claims framed as questions |
+| 7 | Reliability (PR-07) | Pass | Level-2/sentinel status respected in each treatment |
+| 8 | Limitations (PR-08) | Pass | Sole-trader identity and bank-data gaps stated; disclosure texts specified |
+| 9 | Indicators (PR-09) | Pass | Person-aggregation features proposed forbidden; profiling risk is the ADR's core concern |
+| 10 | Authenticity (PR-10) | Pass | N/A |
+| 11 | Vulnerability (PR-11) | Pass | N/A (no territory-locating features; noted for future datasets) |
+| 12 | Labeling (PR-12) | Pass | N/A (no AI content) |
+| 13 | Purpose (PR-13) | Pass | No engagement-optimizing features; restrictions reduce capability |
+| 14 | Secrecy (PR-14) | Pass | Restricted-data handling requirements recorded; no secret values involved |
+| 15 | Authority (PR-15) | Pass | Legal interpretation and final decision reserved to the human; all dispositions are proposals |
+
+---
+
+---
+
 ## Pending Items (open decisions)
 - **P-01** — At what stage should the "red flag" engine be integrated? It has already been decided that it will be included (ADR-008); the specific timing remains to be defined.
 - **P-02** — Name for the social/community layer (distinct from the "Veeduría Abierta" editorial platform).
 - **P-03** — Decided 2026-10-21: agents may not perform git commits, merges, deployments, migrations, or any repository/environment-altering action without explicit human approval for that specific action. Agents propose; humans execute.
 - **P-04** — Resolved via ADR-015 (2026-10-21): Laravel Boost is **not adopted at this time**; a controlled evaluation may be conducted once Phase 1 begins, under the evaluation protocol, acceptance criteria, and rollback strategy defined in ADR-015.
-- **P-05** — Proposed with ADR-017: the Spanish wording and tone of the public narrative (`docs/vision.md` §6) await human approval before any citizen-facing publication. Master Plan §2 citation of `docs/vision.md` also awaits the human edit.
+- **P-05** — Resolved via ADR-018 (2026-10-21): OCDS storage strategy is Hybrid —
+  releases canonical + derived current-state projection. (P-05 was pre-established as the
+  storage-strategy pending item in the data dictionary; the narrative-tone item drafted
+  under this ID in ADR-017 was renumbered to P-06 per human decision.)
+- **P-06** — Remaining: the Spanish wording and tone of the public narrative (`docs/vision.md` §6) await human approval before any citizen-facing publication. The Master Plan v2 citation of `docs/vision.md` was resolved on 2026-10-21: Master Plan v2 (revision 0.2) applied to `docs/master-plan.md` per human approval.
