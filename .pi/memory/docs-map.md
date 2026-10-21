@@ -19,6 +19,7 @@ or the update explicitly deferred with a reason (AGENTS.md — Definition of Don
 | `docs/master-plan.md` | `docs/roadmap.md`, `docs/decision-log.md` (if scope changes) | Human only |
 | `docs/decision-log.md` | Files named in the accepted ADR; `CHANGELOG.md` | Human accepts; agents may draft entries |
 | `docs/vision.md` | `docs/master-plan.md` §2 (if mission/scope language shifts); `docs/decision-log.md` (domain-expansion ADRs, per ADR-017) | Human only (accepted baseline via ADR-017); domain additions each require their own ADR |
+| `docs/founders-intent.md` | `docs/decision-log.md` (adoption/substantive-change ADR); `CHANGELOG.md` | Founder only, in their own voice (ADR-022). Informative layer (level 7): yields to all higher norms; agents may format/transcribe/propose, never alter meaning |
 | `AGENTS.md` | `.pi/agents/_template.md` (if the authority model changes), this file | Human only |
 | `docs/data-dictionary.md` | Any migration/model touching SECOP fields; `docs/glossary.md` | Fields added only from verified API metadata (PR-06) |
 | `docs/glossary.md` | Citizen-facing UI strings that use the term | Agent proposes; human approves wording |
@@ -53,6 +54,16 @@ or the update explicitly deferred with a reason (AGENTS.md — Definition of Don
   (renamed from `docs/vision-draft.md`); routing row added above; domain-expansion gate
   (one ADR per domain) recorded. Master Plan v2 drafted for human review
   (`.pi/artifacts/draft-master-plan-v2.md`); P-06 covers its adoption.
+- **ADR-022 applied (2026-10-21):** `docs/founders-intent.md` adopted as informative-layer
+  founder testimony (v1.0); routing row added above; supremacy clause (constitution wins
+  over founder testimony) recorded in ADR-022.
+- **ADR-021 applied (2026-10-21):** Data Ingestor charter v1.0 added
+  (`.pi/agents/data-ingestor.md`, Accepted; active upon human `/reload`). Runbook
+  operational sections (§5–§9) ownership transferred to the Data Ingestor; the
+  Architect charter's runbook row updated to coordination-only (cross-references,
+  docs-map routing). Generic `.pi/agents/<agent>.md` routing row above applies —
+  no new routing rule. First recommended task post-activation: smoke validation
+  (schema-change pre-flight + read-only completeness baseline; no bulk load).
 - **Open knock-on (tracked):** user-scope charters in `~/.pi/agent/agents/`
   (`gpon-architect`, `issue-reviewer`, `laravel-livewire-reviewer`,
   `livewire-bootstrap-reviewer`, `session-analyst`, `task-guide`) predate

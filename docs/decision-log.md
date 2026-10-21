@@ -473,6 +473,172 @@ Every row above is a **proposal requiring your validation** (PR-06/PR-15); the r
 
 ---
 
+---
+
+## ADR-021 — Activation of the Data Ingestor Agent (First Technical Specialist)
+
+- **Status:** Accepted · 2026-10-21 · (Accepted with two review amendments confirmed by the
+  human at acceptance: section-range alignment to §5–§9; runbook ownership
+  supersession clarification. The Project Architect charter clarification was applied
+  immediately with acceptance, per human approval — not deferred.)
+- **Origin:** Human-approved Data Ingestor design (2026-10-21), produced after a full
+  context rebuild. The Project Architect (governance/memory) exists; Phase 1 requires
+  a data-plane execution role. This is the first technical specialist agent.
+- **Constitutional basis:** PR-05 (official data inviolable — the agent's center of
+  gravity: transactional, append-only, provenance-bearing writes); PR-06 (nothing
+  invented — dictionary-first field protocol; unknowns are errors); PR-07/PR-08
+  (sentinels and levels preserved; coverage findings become limitation proposals);
+  PR-14 (no secrets; `.env` never read); PR-15 (authority is human — charter approved
+  by human, migrations/commits/ADR acceptance excluded); ADR-016 (Pikit agent-file
+  specification — `bash` granted only via explicit human authorization in the charter).
+
+### Context
+1. The Data Ingestor design was approved in principle by the human on 2026-10-21,
+   with all six decision points resolved: **D-2** test execution approved;
+   **D-3** migration execution stays human (P-03); **D-4** one agent owns the whole
+   Phase 1 data plane (raw + normalized); **D-5** model inherited per session
+   (ADR-011); **D-6** this activation ADR recorded; **D-1** scoped bash grant
+   approved **with an additional traceability requirement**.
+2. The human added one capability beyond the proposed design: **Data Quality
+   Reporting** — completeness, anomaly, coverage, and schema-change detection
+   reports — now §6 of the charter.
+3. Charter drafted at `.pi/agents/data-ingestor.md` (Pikit-compliant frontmatter:
+   `name`, `description`, `tools: read, grep, find, ls, write, edit, bash`).
+
+### Decision (proposed)
+1. **Adopt the Data Ingestor charter v1.0** (`.pi/agents/data-ingestor.md`) as
+   approved design, granting:
+   - Write authority over the Phase 1 data plane: ingestion services/jobs/commands/
+     models, migration **files** (execution excluded), ingestion tests, ingestion
+     config (key names only), the operational sections of
+     `docs/ingestion-runbook.md`, and `.pi/artifacts/dq-report-*.md`.
+   - Draft authority over `docs/data-dictionary.md`, `docs/decision-log.md`,
+     `docs/roadmap.md`, `CHANGELOG.md`, `docs/glossary.md`.
+   - A **scoped bash allowlist**: `./vendor/bin/sail artisan secop:*`,
+     `queue:work|restart|failed|retry`, `test` (ingestion paths, `testing` DB),
+     and `tinker --execute` (read-only verification only). Everything else
+     forbidden; credentials never on the command line; Tier A datasets only.
+2. **Bind the D-1 traceability requirement** as charter §5.1: every allowlisted
+   command is reported in task output with (a) the command verbatim, (b) exit
+   status, (c) affected files/tables/batch range, (d) observed side effects. An
+   incomplete traceability log fails the Definition of Done.
+3. **Bind Data Quality Reporting** as charter §6: completeness, anomaly, and
+   coverage reports for every data-writing run; schema-change pre-flight against
+   `/api/views/{id}.json` before every run, with a hard stop on affected fields
+   and a dictionary-first proposal on any drift (PR-06 gate).
+4. **Record ownership boundaries:** the Ingestor never writes `.pi/memory/`;
+   reports flow to the Project Architect for handoffs; the two agents are
+   non-hierarchical and both report to the human. The Architect is never an
+   approver of Ingestor code (reviewers: `laravel-livewire-reviewer`,
+   `livewire-bootstrap-reviewer`).
+5. **Activation is a separate human action.** Acceptance of this ADR records the
+   charter as approved; the agent becomes loader-visible only when the human runs
+   `/reload` (ADR-016 consequences). Acceptance alone does not activate it.
+
+### Consequences
+- `.pi/memory/docs-map.md`: the generic `.pi/agents/<agent>.md` routing row applies;
+  no new routing rule required. A dated note records the Ingestor charter's addition.
+- `docs/ingestion-runbook.md`: operational sections (§5–§9) become the Ingestor's
+  maintained artifacts; §10 (human-approved storage/ingestion decisions) remains
+  read-only for the Ingestor.
+- **Runbook ownership supersession.** The Project Architect charter (§3) grants
+  the Architect "Draft/maintain `docs/ingestion-runbook.md`". From acceptance of
+  this ADR, that grant is **superseded for the operational sections (§5–§9)**,
+  which belong to the Data Ingestor; the Architect retains cross-reference
+  coordination only. A one-line clarification is to be applied to
+  `project-architect.md` at its next approved revision (charters change only by
+  human approval). Until that edit, this ADR is the authoritative ownership
+  record.
+- `AGENTS.md`: no change required (no operational-rule change).
+- `CHANGELOG.md`: entry queued under [Unreleased].
+- Risk noted for the record: the charter file is loader-visible after any
+  `/reload` even before this ADR is accepted. Until acceptance, the human should
+  not run `/reload`, or accepts the agent as available-but-unactivated (it runs
+  only when delegated to).
+
+### Constitutional Test checklist (principles.md §6)
+
+| # | Test | Status | Note |
+|---|---|---|---|
+| 1 | Method (PR-01) | Pass | Provenance per record; DQ reports expose how data arrived |
+| 2 | Verdict (PR-02) | Pass | No citizen-facing output; DQ reports are procedural |
+| 3 | Ecosystem (PR-03) | Pass | N/A — internal tooling |
+| 4 | Permanence (PR-04) | Pass | Runbook ownership puts operational knowledge in documents (PR-04) |
+| 5 | Lineage (PR-05) | Pass | Transactional append-only writes; provenance mandatory; DoD blocking criterion |
+| 6 | Invention (PR-06) | Pass | Dictionary-first protocol; schema-drift hard stop; unknowns are errors |
+| 7 | Reliability (PR-07) | Pass | Sentinels/levels preserved exactly as published |
+| 8 | Limitations (PR-08) | Pass | Coverage reports feed limitation proposals |
+| 9 | Indicators (PR-09) | Pass | Hard exclusion — builds no indicator; DQ reports never assert guilt |
+| 10 | Authenticity (PR-10) | Pass | N/A |
+| 11 | Vulnerability (PR-11) | Pass | N/A — no territory-locating features |
+| 12 | Labeling (PR-12) | Pass | No AI-content pipeline in scope |
+| 13 | Purpose (PR-13) | Pass | Discovery-oriented data movement; no engagement surface |
+| 14 | Secrecy (PR-14) | Pass | `.env` never read; no credentials on command lines; key names only |
+| 15 | Authority (PR-15) | Pass | Charter human-approved; migrations/commits/ADR acceptance excluded; traceability requirement bound |
+
+---
+
+## ADR-022 — Adoption of the Founder's Intent Document
+
+- **Status:** Accepted · 2026-10-21
+- **Origin:** Founder review of the `docs/founders-intent.md` draft (2026-10-21).
+  The document was drafted from the founder's own answers to four targeted questions
+  (origin moment; feared erosions; founder assumptions; most-feared risk) and was
+  accepted verbatim in substance.
+- **Constitutional basis:** PR-04 (built to outlast — distributed memory beyond any
+  contributor, including the founder); PR-15 (authority is human — the document is
+  human-authored testimony that creates no norms and yields to all higher layers);
+  `principles.md` §1.1 (the document is placed at level 7, informative).
+
+### Decision
+1. **Adopt `docs/founders-intent.md` v1.0** as the Founder's Intent document of the
+   initiative — a first-person testimony recording origin, motivation, convictions,
+   founder assumptions, feared erosions, and aspirations.
+2. **Position it as an informative (level 7) layer.** The document cites
+   `principles.md` (PR-01…PR-15), `master-plan.md`, `docs/vision.md`, and this Decision
+   Log; it restates nothing as normative, creates no authority, and binds no one. Its
+   supremacy clause binds: **wherever the founder's testimony and the constitution
+   diverge, the constitution wins** — the document may never be cited to weaken a
+   principle, reopen a decided question, or grant anyone authority the constitution
+   does not grant (including the founder).
+3. **Preserve, as the founder's explicit emphases:** the distinction between
+   capability and outcomes; the commitment to evidence over accusation; that citizens
+   need methods as much as data; the warning against mission capture (the
+   founder-declared most-feared risk, including "founder capture"); and the principle
+   that integrity matters more than attention.
+4. **Canonical language:** English (ADR-013). Any citizen-facing translation is
+   deferred until a community exists and is a separate human decision.
+
+### Consequences
+- `.pi/memory/docs-map.md` gains a routing row for `docs/founders-intent.md`
+  (authority: the founder, in their own voice; agents may format/transcribe/propose,
+  never alter meaning).
+- `CHANGELOG.md` records the adoption.
+- The document's informative status means no other document is required to cite it;
+  `principles.md`, `master-plan.md`, and `docs/vision.md` are unchanged.
+
+### Constitutional Test checklist (principles.md §6)
+
+| # | Test | Result | Notes |
+|---|---|---|---|
+| 1 | Method (PR-01) | Pass | N/A — no data surfaces; teaches method testimony |
+| 2 | Verdict (PR-02) | Pass | Explicitly refuses conclusions-for-citizens |
+| 3 | Ecosystem (PR-03) | Pass | Restates ecosystem humility as testimony |
+| 4 | Permanence (PR-04) | Pass | The document *is* distributed memory; names founder as risk vector |
+| 5 | Lineage (PR-05) | Pass | N/A — makes no data claims |
+| 6 | Invention (PR-06) | Pass | Personal testimony, labeled as such; no data claims |
+| 7 | Reliability (PR-07) | Pass | N/A |
+| 8 | Limitations (PR-08) | Pass | Contains an explicit fallibility note |
+| 9 | Indicators (PR-09) | Pass | Evidence-over-accusation is a preserved emphasis |
+| 10 | Authenticity (PR-10) | Pass | N/A |
+| 11 | Vulnerability (PR-11) | Pass | N/A |
+| 12 | Labeling (PR-12) | Pass | N/A |
+| 13 | Purpose (PR-13) | Pass | Integrity-over-attention preserved |
+| 14 | Secrecy (PR-14) | Pass | No secrets or credentials in the document |
+| 15 | Authority (PR-15) | Pass | Informative layer; supremacy clause; human-authored, human-accepted |
+
+---
+
 ## Pending Items (open decisions)
 - **P-01** — At what stage should the "red flag" engine be integrated? It has already been decided that it will be included (ADR-008); the specific timing remains to be defined.
 - **P-02** — Name for the social/community layer (distinct from the "Veeduría Abierta" editorial platform).
