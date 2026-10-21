@@ -78,6 +78,21 @@ Human validation of a dictionary proposal is therefore a two-file change:
   field-validation proposals) must be mirrored into the command in the same task, or
   drift detection runs against a stale baseline. No procedure change beyond the note;
   no data written.
+- **2026-10-21 — Observed tooling behavior: `secop:fieldstats` census window is not
+  count-ordered (Batch 1 v2 completion; read-only, no data written).** For fields whose
+  distinct-value census exceeds the fetch cap (1,001 groups), the SODA `$group` window
+  is returned in API-internal order, **not** by row count; the command's client-side
+  top-N therefore describes only the fetched window. Observed live on
+  `jbjy-vk9h.duraci_n_del_contrato`: the sentinel literal `No definido` (230,963 rows,
+  4.09% of the dataset) was absent from the fieldstats census, top-values, and sentinel
+  observation, and was found only via auxiliary read-only count queries (SoQL length
+  histogram + unit-family `LIKE` + residual `NOT LIKE`; anonymous; §3 endpoint only).
+  **Standing rule for future evidence runs:** when `census_truncated: true`, treat
+  top-values and "sentinels: none" as window-dependent, and cross-check sentinels with
+  dedicated read-only count queries before reporting absence. `SecopFieldStats` code is
+  unchanged; its unit-test proposals are deferred to the next ingestion testing package
+  (human decision, 2026-10-21). Recorded in the evidence package
+  `.pi/artifacts/dictionary-validation-batch-1-jbjy-vk9h.md` §13 L6.
 
 ## 10. Storage and ingestion decisions (human-approved 2026-10-21)
 1. **NIT normalization:** all NIT values normalized as `text` in future storage models, regardless of source dataset type (`nit_entidad` is `number` in `jbjy-vk9h`, `text` in `p6dx-8zbt`). Never coerce NITs to numeric types.
