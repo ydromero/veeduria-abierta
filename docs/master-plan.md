@@ -34,7 +34,7 @@ The current scope is limited to the passive ingestion, cleaning, normalization, 
 
 **Phase 1 — SECOP II (ongoing).** Level 1 data only.
 - Ingestion from the SODA API (ADR-001/002/003) into staging tables containing immutable raw data.
-- Normalization into a custom model compatible with OCDS (to be defined in `diccionario-datos.md`).
+- Normalization into a custom model compatible with OCDS (to be defined in `docs/data-dictionary.md`).
 - Contract explorer with pagination and a dashboard featuring basic indicators.
 - Out of scope for Phase 1: red flags (P-01), user accounts, social layer, and congressional modules.
 
@@ -57,11 +57,11 @@ See ADR-004. Laravel 13 + Livewire 4 + Bootstrap 5 + PostgreSQL 18, all running 
 ## Living documents
 | Document | Updated when... |
 |---|---|
-| `proyecto-maestro.md` | the vision or scope changes (human) |
-| `registro-decisiones.md` | a significant decision is made |
+| `master-plan.md` | the vision or scope changes (human) |
+| `decision-log.md` | a significant decision is made |
 | `AGENTS.md` | a rule or convention changes (human) |
-| `diccionario-datos.md` (to be created) | new information about a field is discovered or a dataset is added |
-| `runbook-ingesta.md` (to be created) | the ingestion process changes or a new error occurs |
+| `docs/data-dictionary.md` (created 2026-10-21) | new information about a field is discovered or a dataset is added |
+| `docs/ingestion-runbook.md` (not yet created) | the ingestion process changes or a new error occurs |
 | `CHANGELOG.md` (to be created) | every change is integrated |
 
 A complete map of which changes affect which documents can be found in `.pi/memory/docs-map.md`.

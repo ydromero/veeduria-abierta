@@ -80,5 +80,5 @@ Every ADR must state its **Constitutional basis** (`principles.md`), cited by pr
 ## Pending Items (open decisions)
 - **P-01** — At what stage should the "red flag" engine be integrated? It has already been decided that it will be included (ADR-008); the specific timing remains to be defined.
 - **P-02** — Name for the social/community layer (distinct from the "Veeduría Abierta" editorial platform).
-- **P-03** — Can agents perform commits? Default: **no**; they submit proposals, which are then confirmed by a human.
-- **P-04** — Should Laravel Boost be adopted as the source for versioned documentation for agents (considering the risk regarding Livewire 4)? If implemented, it may overwrite `AGENTS.md` and `CLAUDE.md`.
+- **P-03** — Decided 2026-10-21: agents may not perform git commits, merges, deployments, migrations, or any repository/environment-altering action without explicit human approval for that specific action. Agents propose; humans execute.
+- **P-04** — Deferred 2026-10-21: adoption of Laravel Boost as the versioned-docs source for agents is deferred until the Project Architect agent is activated and evaluates the implications (risk of overwriting `AGENTS.md`/`CLAUDE.md` noted in the handoff of 2026-10-21).

@@ -27,5 +27,6 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
-.pi/artifacts
-.pi/memory
+# Pi agent files: memory, handoffs and agent charters are versioned
+# (see .pi/memory/docs-map.md). Rendered review artifacts are not.
+.pi/artifacts/

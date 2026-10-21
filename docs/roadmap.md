@@ -1,0 +1,32 @@
+# Roadmap — Veeduría Abierta
+
+**Status:** Skeleton v0.1 — mirrors `docs/master-plan.md` (vision and scope are human-owned)
+**Rule:** Agents propose roadmap updates; the human approves phase boundaries (PR-15).
+
+## Phase 0 — Foundation and governance
+**Status:** Completed (2026-10-21)
+- Stack installed and verified (ADR-004): Laravel 13, PHP 8.5, Livewire 4,
+  Bootstrap 5, PostgreSQL 18, Sail.
+- Dedicated ports configured (ADR-010).
+- Constitutional layer adopted (`docs/principles.md`, ADR-014).
+- Internal language policy adopted (ADR-013).
+- Governance skeletons created (this package).
+
+## Phase 1 — SECOP ingestion and explorer
+**Status:** Not started. **Blocked by:** data dictionary populated from verified
+API metadata (PR-06).
+Planned (per master-plan): SODA ingestion into immutable staging tables
+(ADR-001/002/003), normalization toward OCDS, contract explorer with
+pagination, dashboard with basic indicators.
+
+## Deferred phases
+- Risk indicator engine — committed conceptually (ADR-008); phase undefined (P-01).
+- Social/community layer — name undefined (P-02).
+- Indigenous-territory alerts — gated on data-sovereignty preconditions (PR-11).
+
+## Open decisions
+| ID | Decision | Status |
+|---|---|---|
+| P-01 | Phase for the risk indicator engine | Undefined |
+| P-02 | Name for the social/community layer | Undefined |
+| P-04 | Adopt Laravel Boost as versioned-docs source | Deferred until the Project Architect evaluates it |
