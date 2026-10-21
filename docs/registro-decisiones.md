@@ -4,6 +4,7 @@ Every significant technical or product decision is recorded here. Decisions are 
 
 **Statuses:** Accepted · Pending · Replaced
 **Decision-maker:** Humans. Agents may propose and draft records, but they do not have the authority to accept ADRs.
+Every ADR must state its **Constitutional basis** (`principles.md`), cited by principle ID.
 
 ---
 
@@ -58,6 +59,13 @@ Every significant technical or product decision is recorded here. Decisions are 
 ## ADR-012 — Research serves as a reference, not as the ultimate source of truth
 - **Status:** Accepted · 2026-10-19
 - **Decision:** `docs/referencia/investigacion-plataformas-veeduria-secop.md` informs the design but is not prescriptive. In cases where it conflicts with an ADR, the ADR takes precedence. Known discrepancies include the use of `$offset` and `X-App-Token` (ADR-002/003), assumptions regarding the use of Livewire 3, Bootstrap 4, and Redis/Horizon, as well as rules inherited from Sonnar GPON (ADR-004/005). Market figures cited therein should not be treated as facts without verifying the original source.
+
+## ADR-014 — Adoption of the Constitutional Layer
+- **Status:** Accepted · 2026-10-21
+- **Constitutional basis:** PR-15 (authority is human); PR-14 (openness of the governance layer itself).
+- **Decision:** Adopt `docs/principles.md` (version 1.0) as the apex constitutional document of the project. Its 15 principles (PR-01…PR-15), entrenchment tiers (E/F), hierarchy of norms, conflict-resolution algorithm, and Constitutional Test govern all future artifacts. Principle IDs are permanent from acceptance; renumbering is forbidden (see `principles.md` §7).
+- **Recorded drafting decisions:** (1) the educational mission promoted to standalone principle PR-01 — *Teach the method* (Tier F); (2) PR-06 — *Nothing is invented* entrenched (Tier E) with the derivation carve-out written into its formulation; (3) PR-14's secrecy clause hardened to admit no exception pathway; (4) Tier E membership: PR-05, PR-06, PR-09, PR-10, PR-12, PR-15.
+- **Knock-on edits executed in this commit:** Master Plan §3 becomes a pointer to `principles.md`; `AGENTS.md` rule 1 adds the constitutional pre-task reading; core domain rules gain principle citations; living-documents table gains `principles.md`.
 
 ---
 

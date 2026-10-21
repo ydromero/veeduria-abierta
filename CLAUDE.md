@@ -1,1 +1,1 @@
-Lee y sigue todas las reglas de @AGENTS.md
+Read and follow all rules in @AGENTS.md, including the constitutional layer (principles.md).
