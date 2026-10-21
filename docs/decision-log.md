@@ -13,6 +13,44 @@ Every ADR must state its **Constitutional basis** (`principles.md`), cited by pr
 - **Decision:** Procurement data is sourced from SECOP II, as published on datos.gov.co (via the SODA API). Datasets: `jbjy-vk9h` (electronic contracts) and `rpmr-utcd`.
 - **Consequence:** We will not build a new SECOP viewer (as BuscaSECOP already exists). Guiding principle: *strengthen, rather than reinvent or compete*.
 
+## ADR-001a — Amendment: Phase 1 Dataset Inventory and Tier Classification
+
+- **Status:** Proposed · 2026-10-21
+- **Amends:** ADR-001 — Source of Truth: SECOP II via SODA API (Accepted · 2026-10-19). ADR-001 remains in force; this amendment updates its dataset definition. It does **not** replace ADR-001.
+- **Constitutional basis:** PR-05 (official data is inviolable — all findings from read-only queries); PR-06 (nothing is invented — datasets, row counts, and fields recorded only from verified API metadata); PR-08 (limitations are part of the content — coverage gaps documented); PR-15 (authority is human — agents draft, the human accepts).
+
+### Context
+- **Catalog discovery (2026-10-21, all read-only).** A catalog search of datos.gov.co returned **952 SECOP-related results**. Most results are derived "filter" views (Socrata datasets that share timestamps with a parent dataset and reuse its field model). After deduplication, **16 primary datasets** (type `dataset`, published by Colombia Compra Eficiente) remain — far more than the two datasets ADR-001 originally named.
+- **Verified row counts and column counts** (via `count(*)` SoQL queries and `/api/views/{id}.json` metadata, all executed anonymously):
+  - `jbjy-vk9h` — SECOP II - Contratos Electrónicos: **5,644,941 rows, 95 columns**
+  - `p6dx-8zbt` — SECOP II - Procesos de Contratación: **9,349,940 rows, 59 columns**
+  - `rpmr-utcd` — SECOP Integrado (SECOPI + SECOPII): **22,850,110 rows, 22 columns**
+  - `u8cx-r425` — SECOP II - Modificaciones a contratos: **30,144,236 rows**
+  - Twelve remaining primary datasets (invoices, guarantees, additions, execution, geodata, budget, bidders, supplier registry, suspensions, PAA) verified and inventoried; see `docs/data-dictionary.md` §1 once the amendment is applied.
+- **Divergence from ADR-001's original wording.** ADR-001 named exactly two datasets (`jbjy-vk9h` + `rpmr-utcd`). Discovery showed that `rpmr-utcd` is an *integrated* SECOP I + SECOP II union dataset that overlaps contract data already covered — with a richer 95-column model — by `jbjy-vk9h`. Treating `rpmr-utcd` as a co-primary source, as the original ADR wording implied, would corrupt contract-level counting.
+
+### Decision (proposed)
+1. **Tier classification of the 16 primary datasets** (authoritative for Phase 1):
+   - **Tier A — ingest in Phase 1; primary truth:**
+     - `jbjy-vk9h` (SECOP II - Contratos Electrónicos, 5,644,941 rows, 95 cols) — authoritative contract facts; the richest contract-level source; directly matches ADR-001's original intent.
+     - `p6dx-8zbt` (SECOP II - Procesos de Contratación, 9,349,940 rows, 59 cols) — authoritative pre-award process lifecycle; required for OCDS tender mapping and, later, documented risk indicators.
+   - **Tier B — documented but deferred (not ingested in Phase 1):**
+     - `rpmr-utcd` (SECOP Integrado, 22,850,110 rows, 22 cols) — an integrated union of legacy SECOP I and SECOP II records. It overlaps `jbjy-vk9h` for all SECOP II contracts while carrying only 22 columns (vs. 95) and mixing two field models; its unique value is legacy SECOP I contracts, which are out of scope per ADR-001's original intent.
+     - `u8cx-r425` (SECOP II - Modificaciones a contratos, 30,144,236 rows) — contract amendments are a legitimate future concern but a separate ingestion concern from base contract facts; deferred to a later Phase 1 increment.
+   - **Tier C — noted, out of Phase 1 scope:** the remaining 12 primary datasets (`ibyt-yi2f`, `gjp9-cutm`, `cb9c-h8sn`, `mfmm-jqmq`, `wwhe-4sq8`, `gra4-pcp2`, `skc9-met7`, `cwhv-7fnp`, `hgi6-6wh3`, `qmzu-gj57`, `u99c-7mfm`, `b6m4-qgqv`), plus all SECOP I legacy datasets. They are inventoried in the data dictionary but not ingested.
+2. **Double-counting risk (explicit).** Ingesting `rpmr-utcd` **and** `jbjy-vk9h` together would count the same SECOP II contracts twice (every SECOP II contract in `rpmr-utcd` also appears in `jbjy-vk9h`) and would mix two incompatible field models (22 columns vs. 95). Any future use of `rpmr-utcd` must be preceded by a documented de-duplication strategy against `jbjy-vk9h` and a field-model reconciliation, recorded as a new ADR.
+3. **Updated authoritative Phase 1 dataset definition.** For Phase 1 ingestion, the authoritative dataset set is **Tier A only: `jbjy-vk9h` and `p6dx-8zbt`**. Tier B is deferred with a documented **re-evaluation trigger**: `rpmr-utcd` is re-evaluated only if legacy SECOP I coverage becomes a human-approved requirement, or if `jbjy-vk9h` is shown to be insufficient for an approved feature, and only with the de-duplication strategy of point 2; `u8cx-r425` is re-evaluated when amendment tracking is scheduled as its own ingestion increment. SECOP I datasets remain out of scope per ADR-001's original intent.
+4. **Access refinement (ADR-003 practical meaning).** All discovery queries succeeded **anonymously** (no token, no credentials). This refines the practical meaning of ADR-003: authentication is a rate-limit/robustness measure for bulk workloads, not an access gate for discovery. The operative rule to record — destined for `docs/ingestion-runbook.md` once that file is created — is, in exact approved wording:
+   > "App Token is optional for discovery activities and strongly recommended for bulk-ingestion workloads."
+   ADR-003's decision on credential storage (Key ID + Key Secret in `.env` only, per ADR-009/PR-14) is unchanged.
+
+### Consequences
+- **`docs/data-dictionary.md` §1** is updated from the two-dataset skeleton to the verified 16-dataset inventory with the Tier A/B/C classification; the empty fields section formerly reserved for `rpmr-utcd` is superseded (fields sections populated for Tier A datasets only; `rpmr-utcd` documented as deferred).
+- **`docs/glossary.md`** gains: *SECOP Integrado (SECOPI+SECOPII union)*, *filter view*, *Tier A / Tier B / Tier C dataset classification*, and the *App Token* operative rule (exact wording above).
+- **`docs/roadmap.md`** gains a Phase 1 scope note: dataset discovery complete (2026-10-21); dictionary population for Tier A in progress.
+- **`docs/ingestion-runbook.md`** (not yet created; skeleton approved as Q-2) will carry the App Token operative rule verbatim in its access section.
+- Tier A field work proceeds under the PR-06 hard gate: fields enter the data dictionary only from verified API metadata and remain non-normative until human validation.
+
 ## ADR-002 — Cursor-based Pagination using `:id`
 - **Status:** Accepted · 2026-10-19
 - **Context:** The `$offset` parameter suffers from performance degradation as the dataset approaches ~283,500 records.

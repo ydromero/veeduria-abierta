@@ -13,8 +13,11 @@
 - Governance skeletons created (this package).
 
 ## Phase 1 — SECOP ingestion and explorer
-**Status:** Not started. **Blocked by:** data dictionary populated from verified
-API metadata (PR-06).
+**Status:** In progress (2026-10-21). Dataset discovery complete (ADR-001a);
+data dictionary populated from verified API metadata and accepted as the
+**Version 1 baseline** (Tier A: `jbjy-vk9h` + `p6dx-8zbt`). Conceptual domain
+modeling underway; database tables and migrations remain blocked until the
+domain model is approved.
 Planned (per master-plan): SODA ingestion into immutable staging tables
 (ADR-001/002/003), normalization toward OCDS, contract explorer with
 pagination, dashboard with basic indicators.
@@ -23,6 +26,12 @@ pagination, dashboard with basic indicators.
 - Risk indicator engine — committed conceptually (ADR-008); phase undefined (P-01).
 - Social/community layer — name undefined (P-02).
 - Indigenous-territory alerts — gated on data-sovereignty preconditions (PR-11).
+
+## Backlog (future ADRs)
+- **Personal and sensitive data exposure ADR** — added 2026-10-21 (Decision 3).
+  Driven by data-dictionary flags HUMAN-6 (bank-account data) and HUMAN-9
+  (personal data). Required before any ingestion, storage, or display of those
+  fields; they must not be exposed until this ADR is accepted.
 
 ## Open decisions
 | ID | Decision | Status |
