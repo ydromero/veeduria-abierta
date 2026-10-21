@@ -117,7 +117,10 @@ Allowed commands — **exactly these patterns, nothing else**:
 | `./vendor/bin/sail artisan tinker --execute` | Read-only verification queries (counts, reconciliation) only |
 
 Everything not listed is forbidden, including read-only convenience commands —
-ask instead. Within the allowlist it is forbidden to: pass credentials on the
+ask instead. **Channel rule (human-approved 2026-10-21, from the smoke-validation
+review): repository reads (except `.env`) use the `read`/`grep` tools; `bash` is
+reserved exclusively for the §5 allowlist.** Within the allowlist it is forbidden
+to: pass credentials on the
 command line, connect to any host other than the SODA API endpoints recorded in
 the runbook, or operate on datasets outside Tier A.
 

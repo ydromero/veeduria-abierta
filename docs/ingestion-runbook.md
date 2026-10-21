@@ -42,6 +42,25 @@
    new release is created — identical content produces no release (V-1 duplicate collapse).
    `release_date` is the observation timestamp (§10, decision 4).
 
+### 5.1 Safeguard — schema-drift baseline coupling (added 2026-10-21, human-approved)
+
+The schema-drift baselines embedded as constants in
+`app/Console/Commands/SecopPreflight.php` (`DICTIONARY_JBJY_VK9H`, `DICTIONARY_P6DX_8ZBT`)
+are a **verbatim transcription** of `docs/data-dictionary.md` §2 and §3
+(verified 2026-10-21). They are a *derived copy*, not an independent source of truth
+(PR-06: the dictionary is field truth).
+
+**Coupling rule (binding):** any change to the data dictionary — a field added,
+removed, or retyped, **including** the acceptance of any field-validation proposal
+(e.g., the Batch 1 HUMAN-flag validations) — **MUST be mirrored into
+`SecopPreflight.php` in the same task**. If the dictionary changes and the command
+does not, drift detection compares live metadata against a stale baseline and can
+neither detect real drift nor avoid false positives, silently breaking the
+charter §6 schema-change gate.
+
+Human validation of a dictionary proposal is therefore a two-file change:
+`docs/data-dictionary.md` **and** `app/Console/Commands/SecopPreflight.php`.
+
 ## 6. Error handling and reporting
 - Error classes, retry policy, escalation to the human. *(To be filled during implementation.)*
 
@@ -53,6 +72,12 @@
 
 ## 9. Change log
 - Append-only; every procedure change dated.
+- **2026-10-21 — §5.1 added (safeguard note, human-approved):** documented the
+  verbatim-transcription coupling between the `SecopPreflight.php` drift baselines and
+  `docs/data-dictionary.md` §2/§3; any dictionary change (including acceptance of
+  field-validation proposals) must be mirrored into the command in the same task, or
+  drift detection runs against a stale baseline. No procedure change beyond the note;
+  no data written.
 
 ## 10. Storage and ingestion decisions (human-approved 2026-10-21)
 1. **NIT normalization:** all NIT values normalized as `text` in future storage models, regardless of source dataset type (`nit_entidad` is `number` in `jbjy-vk9h`, `text` in `p6dx-8zbt`). Never coerce NITs to numeric types.
