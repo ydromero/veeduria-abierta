@@ -93,6 +93,45 @@ Human validation of a dictionary proposal is therefore a two-file change:
   unchanged; its unit-test proposals are deferred to the next ingestion testing package
   (human decision, 2026-10-21). Recorded in the evidence package
   `.pi/artifacts/dictionary-validation-batch-1-jbjy-vk9h.md` §13 L6.
+- **2026-10-29 — Process note: `sail up -d` allowlist deviation — disposition accepted
+  (human ruling, Group 2 fiscal sitting, Q3).** A prior-session use of an environment
+  command (`sail up -d`) outside the charter §5 bash allowlist was self-reported and
+  reviewed. The human ruled (2026-10-29): **documented process issue with no data-plane
+  impact; no further action required** — disposition is a logged process issue, closed
+  with this note. Standing treatment for deviations of this class remains unchanged:
+  self-report in traceability, log here, and never treat as a data-integrity event
+  unless raw data or provenance were touched (they were not).
+- **2026-10-29 — Group 2 row #2 partial validation applied (human Q1/Q2 rulings);
+  §5.1 two-file rule verification (no baseline edit required); relationship-evidence
+  run (read-only).** The human decided (2026-10-29): **Q1 APPROVED** — `valor_pendiente_de`
+  (dictionary §2 row 41) confirmed as the value pending amortization to date (COP);
+  field-name ambiguity resolved. **Q2 Option B** — negative values preserved exactly as
+  published, never corrected/clamped/imputed, ADDITIONALLY recorded as a PR-08
+  source-data-quality limitation; legitimacy vs source error undetermined at this
+  stage. **Q3 NOT decided** — the `valor_amortizado` ↔ `valor_pendiente_de`
+  complement relationship remains OPEN; **no V-9/FV-5 written** (drafts only, in the
+  evidence package). Applied to the dictionary: row 41 wording + flag; §5
+  limitation-register bullet (negative values); [HUMAN-1] checklist row and flag
+  totals. Two-file rule (§5.1): semantics-only change — pre-flight re-run
+  2026-10-29T05:58:56Z (**NO DRIFT**, both datasets; `valor_pendiente_de` live type
+  `number`); `SecopPreflight.php` baseline already carries
+  `"valor_pendiente_de" => "number"` — verified in source, no edit made. Evidence
+  run: 40 anonymous read-only SoQL aggregate queries against `jbjy-vk9h` via
+  `sail artisan tinker --execute` (runbook §3 endpoint only; dedicated full-dataset
+  counts, no truncated census windows, no `$offset`); correlation, both-non-zero
+  counts, identity tests (trivial-vs-substantive decomposition), sign-pattern grid,
+  and negative-value prevalence (57 rows, 0.00101%) recorded in
+  `.pi/artifacts/dq-report-2026-10-29-group2-row2-relationship-evidence.md`. No data
+  written; no environment commands.
+- **2026-10-29 — §5.1 two-file rule verification (V-8 application, no baseline edit
+  required).** Dictionary §2 row 40 (`valor_amortizado`) was updated to its validated
+  wording (V-8, FV-4 — human decision 2026-10-29). Per §5.1 the change is
+  **semantics-only**: `fieldName` (`valor_amortizado`) and `dataTypeName` (`number`)
+  are unchanged in the live API metadata (schema-change pre-flight re-run 2026-10-29:
+  NO DRIFT, both Tier A datasets), and the `SecopPreflight.php` baseline constants
+  already carry `"valor_amortizado" => "number"` verbatim. Verified in the command
+  source; no edit made. Drift detection remains aligned with the dictionary.
+- **2026-10-29 — Group 2 row #2 final validation applied (human Q3 ruling — relationship INDETERMINATE); §5.1 two-file rule verification (no baseline edit required).** The human rendered the final decision for `valor_pendiente_de` (dictionary §2 row 41): **Q3 option (ii)** — the complement relationship between `valor_amortizado` and `valor_pendiente_de` is recorded as **INDETERMINATE**; the evidence package does not support a validated complement relationship between `valor_amortizado` and `valor_del_contrato`, between `valor_amortizado` and `valor_pagado`, or any other published base currently evaluated; **no complement rule is adopted and no arithmetic identity is assumed**; future code, mappings, indicators, and documentation must treat the relationship as unresolved unless new evidence emerges. The human also confirmed the 0-semantics clause: `0` is a substantive published state, never treated as missing data, never converted to NULL, with the approximately 99.9% zero-dominance documented as a PR-08 limitation. Applied: dictionary §6 V-9 note (accepted), §2 row 41 final validated wording + flag, §10 evidence-log V-9 row, [HUMAN-1] checklist row closed and flag totals updated (HUMAN-1 fully closed for both its fields); decision-log FV-5 record added; CHANGELOG entry added. The §5 negative-value limitation-register entry remains as applied (unchanged). Two-file rule (§5.1): semantics-only change — `SecopPreflight.php` baseline verified in source (`"valor_pendiente_de" => "number"` already carried verbatim; `fieldName`/`dataTypeName` unchanged for row 41); no edit made; live metadata unchanged since the 2026-10-29T05:58:56Z pre-flight (NO DRIFT, both datasets). No data written; no environment commands.
 
 ## 10. Storage and ingestion decisions (human-approved 2026-10-21)
 1. **NIT normalization:** all NIT values normalized as `text` in future storage models, regardless of source dataset type (`nit_entidad` is `number` in `jbjy-vk9h`, `text` in `p6dx-8zbt`). Never coerce NITs to numeric types.

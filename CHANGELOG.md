@@ -10,6 +10,44 @@ once a public release exists.
 
 ### Added (accepted, not yet committed)
 
+- **docs:** HUMAN-1 fully closed — `valor_pendiente_de` final validation (human Q3
+  final decision, 2026-10-29, Group 2 fiscal sitting row #2): the complement
+  relationship between `valor_amortizado` and `valor_pendiente_de` is recorded as
+  **INDETERMINATE** — the relationship evidence package (identity tests vs
+  `valor_del_contrato` and `valor_pagado`, plus the exploratory `valor_facturado`
+  candidate; correlations; sign grid; half-value pattern) does not support any
+  validated complement rule, so **no complement rule is adopted and no arithmetic
+  identity is assumed**; code, mappings, indicators, and documentation must treat
+  the relationship as unresolved unless new evidence emerges. The 0-semantics is
+  confirmed: `0` is a substantive published state, never missing data, never
+  NULL-converted, with the approximately 99.9% zero-dominance documented as a
+  PR-08 limitation. Data dictionary: §6 V-9 note added and accepted; §2 row 41
+  updated to final validated wording + flag; §10 evidence-log V-9 row added;
+  [HUMAN-1] checklist row and flag totals restated (HUMAN-1 fully closed for both
+  its fields: `valor_amortizado` V-8/FV-4 and `valor_pendiente_de` V-9/FV-5).
+  Decision log: Field-Validation Record FV-5 added (Accepted · 2026-10-29).
+  Runbook §9 entry added, including the §5.1 two-file-rule verification
+  (semantics-only change, `SecopPreflight.php` baseline verified unchanged; no
+  baseline edit required). Evidence package at
+  `.pi/artifacts/dq-report-2026-10-29-group2-row2-relationship-evidence.md`.
+
+- **docs:** HUMAN-1 further partial closure — `valor_pendiente_de` semantics +
+  negative-values disposition decided (human Q1/Q2 rulings, 2026-10-29, Group 2
+  fiscal sitting row #2): semantics CONFIRMED as the value pending amortization to
+  date (COP); truncated-field-name ambiguity RESOLVED; negative values preserved
+  verbatim — never corrected, clamped, or imputed — and ADDITIONALLY recorded as a
+  PR-08 source-data-quality limitation (legitimacy vs source error UNDETERMINED at
+  this stage). Data dictionary: §2 row 41 updated to partially-validated wording and
+  flag; §5 limitation-register bullet added (negative values); [HUMAN-1] checklist
+  row and flag totals restated. NOT applied (drafts only, pending human acceptance):
+  V-9 note and FV-5 record — the `valor_amortizado` ↔ `valor_pendiente_de`
+  complement relationship remains OPEN; read-only relationship evidence package at
+  `.pi/artifacts/dq-report-2026-10-29-group2-row2-relationship-evidence.md`
+  (identity tests against `valor_del_contrato` and `valor_pagado` do not
+  empirically support the complement reading; decision reserved to the human).
+  Runbook §9 entry added, including the §5.1 two-file-rule verification
+  (semantics-only change, no baseline edit required).
+
 - **docs:** Founder's Intent document adopted (`docs/founders-intent.md`, ADR-022) —
   first-person testimony of origin, motivation, convictions, founder assumptions,
   feared erosions, and aspirations. Informative layer (level 7): restates nothing as
@@ -33,6 +71,23 @@ once a public release exists.
   coordination, cross-reference management, and docs-map routing (charter
   clarification applied). Agent becomes active upon human `/reload`; acceptance
   and activation remain separate actions.
+- **docs:** HUMAN-1 partially closed — `valor_amortizado` validated (V-8 + FV-4,
+  human-validated 2026-10-29, Group 2 fiscal sitting row #1): confirmed as the
+  cumulative amortized value of the contract to date (COP); `0` is a substantive
+  published state ("nothing amortized to date") — never interpreted as missing
+  data, never converted to NULL; published anomalies preserved and logged
+  (PR-06); the ~99.97% zero-dominance recorded as a PR-08 limitation note and
+  the field remains Level 1. Data dictionary: §2 row 40 updated to validated
+  wording/flag; §6 header retitled V-1…V-8 with the V-8 note; §10 evidence-log
+  row added; flag-checklist HUMAN-1 row marked partially validated and flag
+  totals restated; provenance-header status line updated to V-1…V-8 (completes
+  the previously approved stale-line fix, which had pending V-7 wording).
+  Decision log: Field-Validation Record FV-4 (after FV-3). Runbook §9: process
+  note recording the accepted disposition of the `sail up -d` allowlist
+  deviation (documented process issue, no data-plane impact, no further
+  action — human ruling 2026-10-29) and the §5.1 two-file-rule verification
+  (`SecopPreflight.php` baseline unchanged — fieldName and dataTypeName
+  `number` intact for row 40; semantics-only change, no edit required).
 ### Changed (queued for the next documentation commit — accepted, not yet committed)
 
 - **docs:** Master Plan rewritten as Version 2 (revision 0.2) — the product-scope layer.
