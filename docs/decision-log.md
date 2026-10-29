@@ -639,6 +639,33 @@ Every row above is a **proposal requiring your validation** (PR-06/PR-15); the r
 
 ---
 
+## Field-Validation Record FV-1 — `origen_de_los_recursos` (Batch 1 checklist row #5, HUMAN-3)
+
+- **Status:** Accepted · 2026-10-21 (first field-validation record; V-1…V-4 precedent kept validation notes in the data dictionary — this record exists to make the acceptance explicit in the decision log; future field validations may follow this format or the V-note-only format, human's choice)
+- **Constitutional basis:** PR-06 (nothing invented — validated only from live read-only evidence), PR-07 (reliability level 1 preserved), PR-08 (limitations recorded), PR-15 (human decision; agents gathered evidence and drafted).
+- **Decision:** `origen_de_los_recursos` is validated as a two-value published classification attribute. `Recursos Propios` = contract classified as funded exclusively through the entity's own resources. `Distribuido` = residual classification "not exclusively own-resources funded"; it may contain populated funding-component fields (PGN, SGP, royalties, credit resources, territorial own resources) but does NOT guarantee they are populated. The field is a published classification attribute, not a guaranteed funding-breakdown indicator.
+- **Evidence:** Batch 1 evidence package §3.1 + §3.1a (Addendum A1, queries Q0–Q17, anonymous SoQL, live window 2026-10-21, 5,665,176 rows at query time). Dictionary change recorded as V-5.
+- **Consequences:** No code, query, or indicator may assume a `Distribuido` contract's funding is decomposable from its components. The HUMAN-3 additivity question for the component fields (#7–#9, #11, #12) remains open and must be decided in this Group 1 review.
+
+## Field-Validation Record FV-2 — `destino_gasto` (Batch 1 checklist row #6, HUMAN-3)
+
+- **Status:** Accepted · 2026-10-21 (follows the FV-1 format: FV record + V-note)
+- **Constitutional basis:** PR-06 (nothing invented — census evidence from live read-only queries), PR-07 (Level 1 preserved with recorded sentinel prevalence), PR-08 (limitations recorded), PR-15 (human decision; agents gathered evidence and drafted).
+- **Decision:** `destino_gasto` is validated as a published budget-destination classification codelist with four accepted categories: `Inversión`, `Funcionamiento`, `No Definido`, `No aplica`. Validation rules: `No Definido` and `No aplica` are published source values; they must be preserved verbatim, must not be converted to NULL, must not be merged into `Inversión` or `Funcionamiento`, and must remain distinct categories in aggregations, reports, and future mappings. The sentinel values are interpreted as published classification values rather than missing-data indicators.
+- **Reliability note:** sentinel prevalence ≈0.7% (0.6761%; 38,164 of 5,644,941 rows) recorded as a Level-1-with-sentinels reliability note under PR-07/PR-08.
+- **Evidence:** Batch 1 evidence package §3.2 (complete distinct-value census, run 2026-10-21T10:11:35Z, full live dataset). Dictionary change recorded as V-6.
+- **Consequences:** any aggregate, report, OCDS mapping, or indicator built on `destino_gasto` must carry the four categories distinctly; silently dropping or merging the sentinels violates V-6. The remaining HUMAN-3 questions (additivity of component fields #7–#9, #11, #12; scope split #10) remain open.
+
+## Field-Validation Record FV-3 — Additivity of the component-origin fields (Batch 1 HUMAN-3 rows: §11 summary numbering #7–#12; §10 checklist rows #7–#10, #21, #22)
+
+- **Status:** Accepted · 2026-10-21 (follows the FV-1/FV-2 format: FV record + V-note)
+- **Constitutional basis:** PR-06 (nothing invented — the decision grounds only in the live read-only evidence package; anomalies preserved, never corrected), PR-07 (Level 1 preserved), PR-08 (deviations recorded and preserved as limitations), PR-15 (human decision on fiscal/business interpretation; agents gathered evidence and drafted).
+- **Decision:** The six component-origin fields — `presupuesto_general_de_la_nacion_pgn`, `sistema_general_de_participaciones`, `sistema_general_de_regal_as`, `recursos_de_credito`, `recursos_propios`, `recursos_propios_alcald_as_gobernaciones_y_resguardos_ind_genas_` — are validated as an additive decomposition of `valor_del_contrato`. Interpretation: component values are expressed in COP; a value of `0` means no contribution recorded from that source; the expected published behavior is Σ(component fields) = `valor_del_contrato`.
+- **Anomaly rule:** deviations from additivity are treated as published data-quality anomalies. They must be logged and preserved; they must never be corrected, estimated, normalized, or silently excluded. Any reconciliation test (Σ components vs `valor_del_contrato`) is diagnostic (data-quality reporting), never corrective.
+- **AMBIG-8 resolution (2026-10-21, confirmed by the human):** the evidence is sufficient and the name-governing interpretation for row 59 is confirmed — `recursos_propios_alcald_as_gobernaciones_y_resguardos_ind_genas_` is interpreted according to its field name (own resources of mayoralties, governorates, and Indigenous resguardos specifically), while `recursos_propios` remains the generic own-resources component. The two fields are distinct and non-redundant components within the validated additive decomposition (co-existence rules out redundancy — duplicate values would double-count); future mappings and documentation must preserve that distinction. **AMBIG-8 is resolved.**
+- **Evidence:** Batch 1 evidence package §3.3–§3.8 (per-field profiles) and §3.1a Addendum A1 (Q0–Q17); human acceptance of the additivity evidence as sufficient, 2026-10-21. Dictionary change recorded as V-7.
+- **Consequences:** checklist rows #7–#9 close fully; the two own-resources rows (#10 and #22 in §10 checklist numbering — #10 and #12 in the package's §11 summary numbering) close **FULLY** (both the yes/no dimension — component semantics + additivity — and the scope dimension, via the AMBIG-8 resolution). This supersedes the draft FV-3 wording, which had rows #10/#12 closing on their yes/no dimension only with the row-59 scope reading tracked as AMBIG-8. Reconciliation tests against `valor_del_contrato` must report deviations as anomalies (PR-08), never filter or repair them.
+
 ## Pending Items (open decisions)
 - **P-01** — At what stage should the "red flag" engine be integrated? It has already been decided that it will be included (ADR-008); the specific timing remains to be defined.
 - **P-02** — Name for the social/community layer (distinct from the "Veeduría Abierta" editorial platform).

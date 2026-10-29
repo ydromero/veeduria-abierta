@@ -49,3 +49,27 @@ once a public release exists.
   strategy (resolved), narrative-tone item = P-06.
 - **docs:** Data dictionary, conceptual model, and roadmap cross-references updated
   to the reconciled numbering; decision-log ADR-004/006/010 headings repaired.
+- **docs:** HUMAN-3 closed (V-7 + FV-3 + AMBIG-8 resolution, human-validated 2026-10-21)
+  — six component-origin fields (`presupuesto_general_de_la_nacion_pgn`,
+  `sistema_general_de_participaciones`, `sistema_general_de_regal_as`,
+  `recursos_de_credito`, `recursos_propios`,
+  `recursos_propios_alcald_as_gobernaciones_y_resguardos_ind_genas_`) validated as
+  the additive decomposition of `valor_del_contrato` (components in COP; 0 = no
+  contribution recorded from that source; expected Σ components = contract value;
+  additivity deviations are published anomalies — logged and preserved, never
+  corrected, estimated, normalized, or silently excluded). Data dictionary: §6
+  retitled V-1…V-7 with the V-7 note (V-5 interplay unchanged); §2 rows 56–61
+  updated to validated wording/flags (OCDS mapping status untouched — mapping is
+  a separate gate); §10 evidence-log row; flag-checklist HUMAN-3 row validated,
+  AMBIG-8 row resolved, flag totals restated (AMBIG 8 open/1 resolved; HUMAN 9
+  open/1 validated). Decision log: Field-Validation Record FV-3 (after FV-2).
+  **AMBIG-8 resolved — name governs:** `recursos_propios_alcald_as_…` is
+  territorial-entity/Indigenous-resguardo own resources specifically;
+  `recursos_propios` remains the generic own-resources component; the two are
+  distinct, non-redundant components, and future mappings must preserve that
+  distinction. Batch 1 evidence package v5 annotation revision (application only,
+  no new evidence window): §10 checklist rows #7–#10/#21/#22 DECIDED & APPLIED,
+  §3.6/§3.8 resolved-answer annotations, §12 Group 1 complete.
+  `SecopPreflight.php` baselines verified — all six fields present with unchanged
+  names/types (`number`); semantics-only change, no baseline edit required
+  (runbook §5.1). Working tree only — no commit (P-03).
